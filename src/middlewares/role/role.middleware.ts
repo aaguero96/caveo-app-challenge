@@ -2,8 +2,10 @@ import { ParameterizedContext, Next, DefaultContext } from 'koa';
 import { UserRoleEnum } from '../../enums';
 import { IRoleMiddleware } from './role-middleware.interface';
 import { UserState } from '../../states/user.state';
-import { RoleNotFoundException } from '../../exceptions/role-not-found.exception';
-import { RoleNotAllowedException } from '../../exceptions/role-not-allowed.exception';
+import {
+  RoleNotAllowedException,
+  RoleNotFoundException,
+} from '../../exceptions';
 
 export const createRoleMiddleware = (): IRoleMiddleware => {
   return new RoleMiddleware();

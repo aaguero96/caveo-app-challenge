@@ -1,11 +1,8 @@
-import Application from 'koa';
+import { Next, ParameterizedContext } from 'koa';
 import { UserRoleEnum } from '../../enums';
 
 export interface IRoleMiddleware {
   validateUserRole(
     allowedUserRoles: UserRoleEnum[],
-  ): (
-    ctx: Application.ParameterizedContext,
-    next: Application.Next,
-  ) => Promise<void>;
+  ): (ctx: ParameterizedContext, next: Next) => Promise<void>;
 }
