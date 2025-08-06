@@ -6,6 +6,7 @@ import { createSignInOrRegosterService } from './services/sign-in-or-register/si
 import { createEditAccountService } from './services/edit-account/edit-account.service';
 import { createGetMeService } from './services/get-me/get-me.service';
 import { createGetUsersService } from './services/get-users/get-users.service';
+import bodyParser from 'koa-bodyparser';
 
 const main = async () => {
   const signInOrRegisterService = createSignInOrRegosterService();
@@ -24,6 +25,8 @@ const main = async () => {
   const router = createRouter(controller);
 
   const app = new Koa();
+
+  app.use(bodyParser());
 
   app.use(router.routes());
 
