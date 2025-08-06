@@ -6,6 +6,7 @@ const config: Config = {
   testEnvironment: 'node',
   testMatch: ['**/*.spec.ts'],
   collectCoverageFrom: ['src/**/*.ts'],
+  coveragePathIgnorePatterns: ['src/dtos', 'src/enums', 'app.ts'],
 };
 
 export default config;
