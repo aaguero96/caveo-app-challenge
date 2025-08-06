@@ -4,6 +4,7 @@ import {
   Table,
   TableColumn,
   TableIndex,
+  TableUnique,
 } from 'typeorm';
 
 export class CreateTableUsers1754504356963 implements MigrationInterface {
@@ -22,6 +23,7 @@ export class CreateTableUsers1754504356963 implements MigrationInterface {
             generationStrategy: 'uuid',
             isGenerated: true,
             isPrimary: true,
+            primaryKeyConstraintName: 'user_id_primary_key',
           }),
           new TableColumn({
             name: 'name',
@@ -31,14 +33,13 @@ export class CreateTableUsers1754504356963 implements MigrationInterface {
           new TableColumn({
             name: 'email',
             type: 'varchar',
-            isUnique: true,
           }),
           new TableColumn({
             name: 'role',
             type: 'enum',
-            isNullable: true,
             enumName: 'user_role_enum',
             enum: ['admin', 'usuário'],
+            default: `'usuário'::user_role_enum`,
           }),
           new TableColumn({
             name: 'isOnboarded',
@@ -64,7 +65,13 @@ export class CreateTableUsers1754504356963 implements MigrationInterface {
         indices: [
           new TableIndex({
             columnNames: ['email'],
-            name: 'users_email_index',
+            name: 'user_email_index',
+          }),
+        ],
+        uniques: [
+          new TableUnique({
+            columnNames: ['email'],
+            name: 'user_email_unique',
           }),
         ],
       }),
@@ -78,5 +85,7 @@ export class CreateTableUsers1754504356963 implements MigrationInterface {
     await queryRunner.query(`
         DROP TYPE user_role_enum
     `);
+
+    await queryRunner.dropTable('User', true, true, true);
   }
 }
