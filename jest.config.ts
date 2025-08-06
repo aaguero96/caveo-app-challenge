@@ -5,6 +5,7 @@ const config: Config = {
   preset: 'ts-jest',
   testEnvironment: 'node',
   testMatch: ['**/*.spec.ts'],
+  collectCoverageFrom: ['src/**/*.ts'],
 };
 
 export default config;
