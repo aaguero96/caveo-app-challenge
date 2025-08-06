@@ -1,9 +1,14 @@
 import Koa from 'koa';
+import { createRouter } from './router/router';
 
-const app = new Koa();
+const main = async () => {
+  const router = createRouter();
 
-app.use(async (ctx) => {
-  ctx.body = 'hello world';
-});
+  const app = new Koa();
 
-app.listen(3000);
+  app.use(router.routes());
+
+  app.listen(3000);
+};
+
+main();
