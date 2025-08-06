@@ -5,6 +5,7 @@ import {
   GetMeResponseDto,
   GetUsersQueryDto,
   GetUsersResponseDto,
+  EditAccountRequestDto,
 } from '../dtos';
 import { IEditAccountService } from './edit-account/edit-account-service.interface';
 import { IGetMeService } from './get-me/get-me-service.interface';
@@ -40,8 +41,10 @@ class Service implements IService {
     return this._signInOrRegisterService.signInOrRegister(dto);
   };
 
-  editAccount = async (userId: string): Promise<EditAccountResponseDto> => {
-    return this._editAccountService.editAccount(userId);
+  editAccount = async (
+    dto: EditAccountRequestDto,
+  ): Promise<EditAccountResponseDto> => {
+    return this._editAccountService.editAccount(dto);
   };
 
   getMe = async (userId: string): Promise<GetMeResponseDto> => {

@@ -1,5 +1,5 @@
-import { EditAccountResponseDto } from '../../dtos';
+import { EditAccountRequestDto, EditAccountResponseDto } from '../../dtos';
 
 export interface IEditAccountService {
-  editAccount(userId: string): Promise<EditAccountResponseDto>;
+  editAccount(dto: EditAccountRequestDto): Promise<EditAccountResponseDto>;
 }

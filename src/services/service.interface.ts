@@ -1,4 +1,5 @@
 import {
+  EditAccountRequestDto,
   EditAccountResponseDto,
   GetMeResponseDto,
   GetUsersQueryDto,
@@ -11,7 +12,7 @@ export interface IService {
   signInOrRegister(
     dto: SignInOrRegisterRequestDto,
   ): Promise<SignInOrRegisterResponseDto>;
-  editAccount(userId: string): Promise<EditAccountResponseDto>;
+  editAccount(dto: EditAccountRequestDto): Promise<EditAccountResponseDto>;
   getMe(userId: string): Promise<GetMeResponseDto>;
   getUsers(query: GetUsersQueryDto): Promise<GetUsersResponseDto>;
 }
