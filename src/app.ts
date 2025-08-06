@@ -9,8 +9,13 @@ import { createGetUsersService } from './services/get-users/get-users.service';
 import bodyParser from 'koa-bodyparser';
 import { createJwtMiddleware } from './middlewares/jwt/jwt.middleware';
 import { createRoleMiddleware } from './middlewares/role/role.middleware';
+import { createDatabaseConfig } from './config';
 
 const main = async () => {
+  const databaseConfig = createDatabaseConfig();
+  await databaseConfig.dataSource.initialize();
+  await databaseConfig.dataSource.runMigrations();
+
   const signInOrRegisterService = createSignInOrRegosterService();
   const editAccountService = createEditAccountService();
   const getMeService = createGetMeService();
