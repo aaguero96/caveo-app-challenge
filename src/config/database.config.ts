@@ -14,7 +14,7 @@ class DatabaseConfig {
       port: 5432,
       username: 'test',
       password: 'test',
-      entities: [],
+      entities: ['src/entities/*.entity.ts'],
       migrations: ['src/migrations/**/*.ts'],
       migrationsTableName: 'Migration',
       migrationsTransactionMode: 'each',

@@ -12,6 +12,7 @@ const config: Config = {
     'app.ts',
     'src/migrations',
     'src/config',
+    'src/entities',
   ],
 };
 
