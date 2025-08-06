@@ -7,6 +7,8 @@ import { createEditAccountService } from './services/edit-account/edit-account.s
 import { createGetMeService } from './services/get-me/get-me.service';
 import { createGetUsersService } from './services/get-users/get-users.service';
 import bodyParser from 'koa-bodyparser';
+import { createJwtMiddleware } from './middlewares/jwt/jwt.middleware';
+import { createRoleMiddleware } from './middlewares/role/role.middleware';
 
 const main = async () => {
   const signInOrRegisterService = createSignInOrRegosterService();
@@ -20,9 +22,12 @@ const main = async () => {
     getUsersService,
   );
 
+  const jwtMiddeware = createJwtMiddleware();
+  const roleMiddeware = createRoleMiddleware();
+
   const controller = createController(service);
 
-  const router = createRouter(controller);
+  const router = createRouter(jwtMiddeware, roleMiddeware, controller);
 
   const app = new Koa();
 

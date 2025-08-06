@@ -1,10 +1,19 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { IController } from '../controllers/controller.interface';
+import { IJwtMiddleware } from '../middlewares/jwt/jwt-middleware.interface';
 import { createRouter } from './router';
-import {} from 'jest';
+import { IRoleMiddleware } from '../middlewares/role/role-middleware.interface';
 
 describe('createRouter', () => {
+  class MockJwtMiddleware implements IJwtMiddleware {
+    validateBearerToken = jest.fn();
+  }
+
+  class MockRoleMiddleware implements IRoleMiddleware {
+    validateUserRole = () => jest.fn();
+  }
+
   class MockController implements IController {
     signInOrRegister = jest.fn();
     editAccount = jest.fn();
@@ -13,8 +22,14 @@ describe('createRouter', () => {
   }
 
   const mockController = new MockController();
+  const mockJwtMiddleware = new MockJwtMiddleware();
+  const mockRoleMiddleware = new MockRoleMiddleware();
 
-  const router = createRouter(mockController);
+  const router = createRouter(
+    mockJwtMiddleware,
+    mockRoleMiddleware,
+    mockController,
+  );
 
   describe('POST /api/auth', () => {
     const authRoute = router.stack.find((route) => route.path === '/api/auth');
