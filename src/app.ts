@@ -1,8 +1,11 @@
 import Koa from 'koa';
 import { createRouter } from './router/router';
+import { createController } from './controllers/controller';
 
 const main = async () => {
-  const router = createRouter();
+  const controller = createController();
+
+  const router = createRouter(controller);
 
   const app = new Koa();
 
