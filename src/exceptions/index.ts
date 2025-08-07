@@ -16,3 +16,4 @@ export * from './access-token-empty.exception';
 export * from './token-invalid-format.exception';
 export * from './token-expired.exception';
 export * from './user-already-been-confimed.exception';
+export * from './zod.exception';

@@ -25,20 +25,61 @@ describe('Controller', () => {
   });
 
   describe('signInOrRegister', () => {
-    it('success case', async () => {
+    it('success case - when register', async () => {
       const ctx = {
         request: {
           body: {},
         },
       } as any;
 
-      mockService.signInOrRegister.mockResolvedValueOnce({});
+      mockService.signInOrRegister.mockResolvedValueOnce({ status: 201 });
 
       await controller.signInOrRegister(ctx);
 
       expect(mockService.signInOrRegister.mock.calls).toHaveLength(1);
-      expect(ctx.body).toStrictEqual({});
+      expect(ctx.body).toStrictEqual({ status: 201 });
       expect(ctx.status).toEqual(201);
+    });
+
+    it('success case - when already been registered', async () => {
+      const ctx = {
+        request: {
+          body: {},
+        },
+      } as any;
+
+      mockService.signInOrRegister.mockResolvedValueOnce({
+        status: 200,
+      });
+
+      await controller.signInOrRegister(ctx);
+
+      expect(mockService.signInOrRegister.mock.calls).toHaveLength(1);
+      expect(ctx.body).toStrictEqual({ status: 200 });
+      expect(ctx.status).toEqual(200);
+    });
+
+    it('error case', async () => {
+      const ctx = {
+        request: {
+          body: {},
+        },
+      } as any;
+
+      mockService.signInOrRegister.mockRejectedValueOnce(
+        new Error('mock-error'),
+      );
+
+      await controller.signInOrRegister(ctx);
+
+      expect(mockService.signInOrRegister.mock.calls).toHaveLength(1);
+      expect(ctx.body).toStrictEqual({
+        status: 500,
+        errorCode: 'internal_server_error',
+        message: 'mock-error',
+        body: new Error('mock-error'),
+      });
+      expect(ctx.status).toEqual(500);
     });
   });
 

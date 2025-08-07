@@ -12,7 +12,7 @@ import { createRoleMiddleware } from './middlewares/role/role.middleware';
 import { createDatabaseConfig, createEnvConfig } from './config';
 import { createAuth } from './auth/auth';
 import { createUserRepository } from './repositories/user/user.repository';
-import { UserRoleEnum } from './enums';
+import { createValidatieRequestMiddleware } from './middlewares/validate-request/validate-request.middleware';
 
 const main = async () => {
   const envConfig = createEnvConfig();
@@ -38,18 +38,18 @@ const main = async () => {
     getUsersService,
   );
 
-  // const t = await service.signInOrRegister({
-  //   email: 'andre@gmail.com',
-  //   password: '123456vdAsujipvgdb#',
-  // });
-  // await auth.addRoleToUser('andre@gmail.com', UserRoleEnum.USER);
-
   const jwtMiddeware = createJwtMiddleware();
   const roleMiddeware = createRoleMiddleware();
+  const validateRequestMiddeware = createValidatieRequestMiddleware();
 
   const controller = createController(service);
 
-  const router = createRouter(jwtMiddeware, roleMiddeware, controller);
+  const router = createRouter(
+    jwtMiddeware,
+    roleMiddeware,
+    validateRequestMiddeware,
+    controller,
+  );
 
   const app = new Koa();
 
