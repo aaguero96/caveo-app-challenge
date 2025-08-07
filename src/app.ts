@@ -9,10 +9,12 @@ import { createGetUsersService } from './services/get-users/get-users.service';
 import bodyParser from 'koa-bodyparser';
 import { createJwtMiddleware } from './middlewares/jwt/jwt.middleware';
 import { createRoleMiddleware } from './middlewares/role/role.middleware';
-import { createDatabaseConfig } from './config';
+import { createDatabaseConfig, createEnvConfig } from './config';
 
 const main = async () => {
-  const databaseConfig = createDatabaseConfig();
+  const envConfig = createEnvConfig();
+
+  const databaseConfig = createDatabaseConfig(envConfig);
   await databaseConfig.dataSource.initialize();
   await databaseConfig.dataSource.runMigrations();
 

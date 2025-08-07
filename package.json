@@ -7,8 +7,8 @@
     "migration:create": "typeorm migration:create",
     "test": "jest",
     "build": "tsc -p .",
-    "start": "node dist/app.js",
-    "start:dev": "nodemon src/app.ts"
+    "start": "NODE_ENV=production node dist/app.js",
+    "start:dev": "NODE_ENV=development nodemon src/app.ts"
   },
   "repository": {
     "type": "git",
@@ -22,12 +22,14 @@
   },
   "homepage": "https://github.com/aaguero96/caveo-app-challenge#readme",
   "dependencies": {
+    "dotenv": "^17.2.1",
     "koa": "^3.0.1",
     "koa-bodyparser": "^4.4.1",
     "koa-router": "^14.0.0",
     "pg": "^8.16.3",
     "reflect-metadata": "^0.2.2",
-    "typeorm": "^0.3.25"
+    "typeorm": "^0.3.25",
+    "zod": "^4.0.15"
   },
   "devDependencies": {
     "@eslint/js": "^9.32.0",

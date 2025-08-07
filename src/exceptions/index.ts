@@ -3,3 +3,4 @@ export * from './role-not-allowed.exception';
 export * from './role-not-found.exception';
 export * from './bearer-token-not-found.exception';
 export * from './entity-not-found.exception';
+export * from './value-not-included-in-map.exception';
