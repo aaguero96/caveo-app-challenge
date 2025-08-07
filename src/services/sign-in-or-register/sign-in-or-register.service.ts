@@ -30,6 +30,7 @@ class SignInOrRegisterService implements ISignInOrRegisterService {
     await queryRunner.startTransaction();
     const manager = queryRunner.manager;
 
+    let statusCodeResponse = 200;
     try {
       const user = await this._userRepository.findOne({ email: dto.email });
       if (!user) {
@@ -46,6 +47,8 @@ class SignInOrRegisterService implements ISignInOrRegisterService {
         await this._auth.confirmUser(dto.email);
 
         await this._auth.addRoleToUser(dto.email, UserRoleEnum.USER);
+
+        statusCodeResponse = 201;
       }
 
       const { token, expiresIn } = await this._auth.signIn(
@@ -59,6 +62,7 @@ class SignInOrRegisterService implements ISignInOrRegisterService {
         type: 'Bearer',
         token,
         expiresIn,
+        status: statusCodeResponse,
       };
     } catch (err) {
       await queryRunner.rollbackTransaction();

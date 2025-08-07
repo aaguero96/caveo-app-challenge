@@ -4,6 +4,7 @@ export interface SignInOrRegisterRequestDto {
 }
 
 export interface SignInOrRegisterResponseDto {
+  status: number;
   type: 'Bearer';
   token: string;
   expiresIn: string;

@@ -99,6 +99,7 @@ describe('GetMeService', () => {
         type: 'Bearer',
         token: 'mock-token',
         expiresIn: '1s',
+        status: 201,
       });
       expect(mockQueryRunner.commitTransaction).toHaveBeenCalledTimes(1);
       expect(mockQueryRunner.release).toHaveBeenCalledTimes(1);
@@ -129,6 +130,7 @@ describe('GetMeService', () => {
         type: 'Bearer',
         token: 'mock-token',
         expiresIn: '1s',
+        status: 200,
       });
       expect(mockQueryRunner.commitTransaction).toHaveBeenCalledTimes(1);
       expect(mockQueryRunner.release).toHaveBeenCalledTimes(1);
