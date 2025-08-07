@@ -15,20 +15,28 @@ const envSchema = z.object({
   DATABASE_PASSWORD: z.string().default('test'),
   DATABASE_NAME: z.string().default('test'),
   DATABASE_SSL: z.coerce.boolean().default(false),
+  AWS_COGNITO_CLIENT_ID: z.string().default(''),
+  AWS_COGNITO_CLIENT_SECRET: z.string().default(''),
 });
 
 export class EnvConfig {
-  private _api: {
+  api: {
     nodeEnv: EnvironmentEnum;
     port: number;
   };
-  private _database: {
+  database: {
     host: string;
     port: number;
     username: string;
     password: string;
     name: string;
     ssl: boolean;
+  };
+  aws: {
+    cognito: {
+      clientId: string;
+      clientSecret: string;
+    };
   };
 
   constructor() {
@@ -40,12 +48,12 @@ export class EnvConfig {
 
     const env = envSchema.parse(process.env);
 
-    this._api = {
+    this.api = {
       nodeEnv: env['NODE_ENV'],
       port: env['PORT'],
     };
 
-    this._database = {
+    this.database = {
       host: env['DATABASE_HOST'],
       name: env['DATABASE_NAME'],
       password: env['DATABASE_PASSWORD'],
@@ -53,23 +61,12 @@ export class EnvConfig {
       username: env['DATABASE_USERNAME'],
       ssl: env['DATABASE_SSL'],
     };
-  }
 
-  get api(): {
-    nodeEnv: EnvironmentEnum;
-    port: number;
-  } {
-    return this._api;
-  }
-
-  get database(): {
-    host: string;
-    port: number;
-    username: string;
-    password: string;
-    name: string;
-    ssl: boolean;
-  } {
-    return this._database;
+    this.aws = {
+      cognito: {
+        clientId: env['AWS_COGNITO_CLIENT_ID'],
+        clientSecret: env['AWS_COGNITO_CLIENT_SECRET'],
+      },
+    };
   }
 }

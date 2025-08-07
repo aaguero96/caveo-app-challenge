@@ -5,9 +5,6 @@ export interface IAuth {
     email: string,
     password: string,
   ): Promise<{ token: string; expiresIn: string }>;
-  signUp(
-    email: string,
-    password: string,
-  ): Promise<{ token: string; expiresIn: string }>;
+  signUp(email: string, password: string): Promise<void>;
   validate(token: string): Promise<{ email: string; roles: UserRoleEnum[] }>;
 }

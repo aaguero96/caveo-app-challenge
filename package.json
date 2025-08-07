@@ -23,6 +23,7 @@
   },
   "homepage": "https://github.com/aaguero96/caveo-app-challenge#readme",
   "dependencies": {
+    "@aws-sdk/client-cognito-identity-provider": "^3.862.0",
     "dotenv": "^17.2.1",
     "koa": "^3.0.1",
     "koa-bodyparser": "^4.4.1",
