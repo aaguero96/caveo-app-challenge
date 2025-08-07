@@ -10,15 +10,24 @@ import bodyParser from 'koa-bodyparser';
 import { createJwtMiddleware } from './middlewares/jwt/jwt.middleware';
 import { createRoleMiddleware } from './middlewares/role/role.middleware';
 import { createDatabaseConfig, createEnvConfig } from './config';
+import { createAuth } from './auth/auth';
+import { createUserRepository } from './repositories/user/user.repository';
+import { createValidatieRequestMiddleware } from './middlewares/validate-request/validate-request.middleware';
 
 const main = async () => {
   const envConfig = createEnvConfig();
-
   const databaseConfig = createDatabaseConfig(envConfig);
   await databaseConfig.dataSource.initialize();
   await databaseConfig.dataSource.runMigrations();
 
-  const signInOrRegisterService = createSignInOrRegosterService();
+  const auth = createAuth(envConfig);
+  const userRepository = createUserRepository(databaseConfig.dataSource);
+
+  const signInOrRegisterService = createSignInOrRegosterService(
+    databaseConfig.dataSource,
+    auth,
+    userRepository,
+  );
   const editAccountService = createEditAccountService();
   const getMeService = createGetMeService();
   const getUsersService = createGetUsersService();
@@ -31,10 +40,16 @@ const main = async () => {
 
   const jwtMiddeware = createJwtMiddleware();
   const roleMiddeware = createRoleMiddleware();
+  const validateRequestMiddeware = createValidatieRequestMiddleware();
 
   const controller = createController(service);
 
-  const router = createRouter(jwtMiddeware, roleMiddeware, controller);
+  const router = createRouter(
+    jwtMiddeware,
+    roleMiddeware,
+    validateRequestMiddeware,
+    controller,
+  );
 
   const app = new Koa();
 

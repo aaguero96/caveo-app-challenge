@@ -4,7 +4,7 @@ import { IController } from '../controllers/controller.interface';
 import { IJwtMiddleware } from '../middlewares/jwt/jwt-middleware.interface';
 import { createRouter } from './router';
 import { IRoleMiddleware } from '../middlewares/role/role-middleware.interface';
-
+import { IValidateRequestMiddleware } from '../middlewares/validate-request/validate-request-middleware.interface';
 describe('createRouter', () => {
   class MockJwtMiddleware implements IJwtMiddleware {
     validateBearerToken = jest.fn();
@@ -12,6 +12,10 @@ describe('createRouter', () => {
 
   class MockRoleMiddleware implements IRoleMiddleware {
     validateUserRole = () => jest.fn();
+  }
+
+  class MockValidateRequestMiddleware implements IValidateRequestMiddleware {
+    validateRequest = () => jest.fn();
   }
 
   class MockController implements IController {
@@ -24,10 +28,12 @@ describe('createRouter', () => {
   const mockController = new MockController();
   const mockJwtMiddleware = new MockJwtMiddleware();
   const mockRoleMiddleware = new MockRoleMiddleware();
+  const mockValidateRequestMiddleware = new MockValidateRequestMiddleware();
 
   const router = createRouter(
     mockJwtMiddleware,
     mockRoleMiddleware,
+    mockValidateRequestMiddleware,
     mockController,
   );
 
@@ -42,7 +48,8 @@ describe('createRouter', () => {
     it('implement controller signInOrRegister', () => {
       const context = {} as any;
       const next = {} as any;
-      authRoute?.stack[0](context, next);
+
+      authRoute?.stack[1](context, next);
       expect(mockController.signInOrRegister.mock.calls).toHaveLength(1);
     });
   });

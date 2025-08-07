@@ -11,6 +11,7 @@ import {
   SignInOrRegisterResponseDto,
 } from '../dtos';
 import { UserState } from '../states/user.state';
+import { handleExceptionResponse } from '../utils';
 
 export const createController = (service: IService): IController => {
   return new Controller(service);
@@ -26,8 +27,15 @@ class Controller implements IController {
       SignInOrRegisterResponseDto
     >,
   ): Promise<void> => {
-    ctx.status = 201;
-    ctx.body = await this._service.signInOrRegister(ctx.request.body);
+    try {
+      const response = await this._service.signInOrRegister(ctx.request.body);
+
+      ctx.status = response.status;
+      ctx.body = response;
+    } catch (err) {
+      handleExceptionResponse(err, ctx);
+      return;
+    }
   };
 
   editAccount = async (

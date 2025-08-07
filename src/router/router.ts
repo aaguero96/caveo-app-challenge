@@ -3,10 +3,13 @@ import { IController } from '../controllers/controller.interface';
 import { IJwtMiddleware } from '../middlewares/jwt/jwt-middleware.interface';
 import { IRoleMiddleware } from '../middlewares/role/role-middleware.interface';
 import { UserRoleEnum } from '../enums';
+import { IValidateRequestMiddleware } from '../middlewares/validate-request/validate-request-middleware.interface';
+import { signInOrRegisterRequestSchema } from '../dtos';
 
 export const createRouter = (
   jwtMiddleware: IJwtMiddleware,
   roleMiddleware: IRoleMiddleware,
+  validateRequestMiddleware: IValidateRequestMiddleware,
   controller: IController,
 ): Router => {
   const router = new Router();
@@ -15,7 +18,11 @@ export const createRouter = (
   // // public routes
 
   // post routes
-  router.post('/auth', controller.signInOrRegister);
+  router.post(
+    '/auth',
+    validateRequestMiddleware.validateRequest(signInOrRegisterRequestSchema),
+    controller.signInOrRegister,
+  );
 
   // // private routes (bearer token)
   router.use(jwtMiddleware.validateBearerToken);

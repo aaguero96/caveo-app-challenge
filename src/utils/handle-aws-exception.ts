@@ -3,6 +3,7 @@ import {
   Exception,
   InvalidParameterFormatException,
   InvalidPasswordFormatException,
+  UserAlreadyBeenCreatedException,
   UserAlreadyExistException,
   UserInvalidCredentialException,
   UserNotConfirmedException,
@@ -21,6 +22,8 @@ export const handleAwsException = (err: unknown): Exception | undefined => {
         return new UserInvalidCredentialException();
       case 'User is disabled.':
         return new UserWithoutAccessException();
+      case 'User cannot be confirmed. Current status is CONFIRMED':
+        return new UserAlreadyBeenCreatedException();
     }
   }
 

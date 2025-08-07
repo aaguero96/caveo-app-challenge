@@ -6,7 +6,6 @@ import {
   ObjectLiteral,
   Repository,
 } from 'typeorm';
-import { EntityNotFoundException } from '../exceptions';
 import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity.js';
 
 export abstract class AbstractRepository<T extends ObjectLiteral> {
@@ -42,7 +41,7 @@ export abstract class AbstractRepository<T extends ObjectLiteral> {
           order?: FindOptionsOrder<T> | undefined;
         }
       | undefined,
-  ): Promise<T> => {
+  ): Promise<T | null> => {
     const fnExec = async (entityManager: EntityManager) => {
       let order: FindOptionsOrder<T> = {};
       if (options?.order) {
@@ -53,12 +52,6 @@ export abstract class AbstractRepository<T extends ObjectLiteral> {
         where,
         order,
       });
-
-      if (!response) {
-        throw new EntityNotFoundException({
-          tableName: this._repository.metadata.tableName,
-        });
-      }
 
       return response;
     };
