@@ -83,19 +83,6 @@ describe('UserRepositiory', () => {
       ).toHaveLength(1);
       expect(response).toStrictEqual({ id: '1' });
     });
-
-    it('error when not found user', async () => {
-      (mockRepository.manager?.findOne as jest.Mock).mockResolvedValueOnce(
-        undefined,
-      );
-
-      await expect(userRepository.findOne({ id: '1' })).rejects.toThrow(
-        'entity User not found',
-      );
-      expect(
-        (mockRepository.manager?.findOne as jest.Mock).mock.calls,
-      ).toHaveLength(1);
-    });
   });
 
   describe('find', () => {

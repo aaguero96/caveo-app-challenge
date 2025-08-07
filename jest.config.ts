@@ -13,6 +13,7 @@ const config: Config = {
     'src/migrations',
     'src/config',
     'src/entities',
+    'src/exceptions',
   ],
 };
 

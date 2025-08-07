@@ -2,9 +2,11 @@ import { UserRoleEnum } from '../enums';
 import { IAuth } from './auth.interface';
 import { EnvConfig } from '../config/env.config';
 import {
+  AdminConfirmSignUpCommand,
   CognitoIdentityProviderClient,
   InitiateAuthCommand,
   SignUpCommand,
+  AdminAddUserToGroupCommand,
 } from '@aws-sdk/client-cognito-identity-provider';
 import {
   createHmac,
@@ -29,6 +31,10 @@ class Auth implements IAuth {
   constructor(private readonly _envConfig: EnvConfig) {
     this._cognitoClient = new CognitoIdentityProviderClient({
       region: this._envConfig.aws.cognito.region,
+      credentials: {
+        accessKeyId: _envConfig.aws.accessKeyId,
+        secretAccessKey: _envConfig.aws.secretAccessKey,
+      },
     });
   }
 
@@ -161,6 +167,43 @@ class Auth implements IAuth {
       return { email, roles };
     } catch (err) {
       const exception = handleJwtException(err);
+      if (exception) {
+        throw exception;
+      }
+
+      throw err;
+    }
+  };
+
+  confirmUser = async (email: string): Promise<void> => {
+    try {
+      const command = new AdminConfirmSignUpCommand({
+        Username: email,
+        UserPoolId: this._envConfig.aws.cognito.userPoolId,
+      });
+
+      await this._cognitoClient.send(command);
+    } catch (err) {
+      const exception = handleAwsException(err);
+      if (exception) {
+        throw exception;
+      }
+
+      throw err;
+    }
+  };
+
+  addRoleToUser = async (email: string, role: UserRoleEnum): Promise<void> => {
+    try {
+      const command = new AdminAddUserToGroupCommand({
+        Username: email,
+        UserPoolId: this._envConfig.aws.cognito.userPoolId,
+        GroupName: role.toString(),
+      });
+
+      await this._cognitoClient.send(command);
+    } catch (err) {
+      const exception = handleAwsException(err);
       if (exception) {
         throw exception;
       }

@@ -10,15 +10,24 @@ import bodyParser from 'koa-bodyparser';
 import { createJwtMiddleware } from './middlewares/jwt/jwt.middleware';
 import { createRoleMiddleware } from './middlewares/role/role.middleware';
 import { createDatabaseConfig, createEnvConfig } from './config';
+import { createAuth } from './auth/auth';
+import { createUserRepository } from './repositories/user/user.repository';
+import { UserRoleEnum } from './enums';
 
 const main = async () => {
   const envConfig = createEnvConfig();
-
   const databaseConfig = createDatabaseConfig(envConfig);
   await databaseConfig.dataSource.initialize();
   await databaseConfig.dataSource.runMigrations();
 
-  const signInOrRegisterService = createSignInOrRegosterService();
+  const auth = createAuth(envConfig);
+  const userRepository = createUserRepository(databaseConfig.dataSource);
+
+  const signInOrRegisterService = createSignInOrRegosterService(
+    databaseConfig.dataSource,
+    auth,
+    userRepository,
+  );
   const editAccountService = createEditAccountService();
   const getMeService = createGetMeService();
   const getUsersService = createGetUsersService();
@@ -28,6 +37,12 @@ const main = async () => {
     getMeService,
     getUsersService,
   );
+
+  // const t = await service.signInOrRegister({
+  //   email: 'andre@gmail.com',
+  //   password: '123456vdAsujipvgdb#',
+  // });
+  // await auth.addRoleToUser('andre@gmail.com', UserRoleEnum.USER);
 
   const jwtMiddeware = createJwtMiddleware();
   const roleMiddeware = createRoleMiddleware();

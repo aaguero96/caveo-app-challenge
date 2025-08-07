@@ -70,7 +70,7 @@ export class CreateTableUsers1754504356963 implements MigrationInterface {
         ],
         uniques: [
           new TableUnique({
-            columnNames: ['email'],
+            columnNames: ['email', 'deletedAt'],
             name: 'user_email_unique',
           }),
         ],

@@ -23,7 +23,7 @@ export interface IRepository<T> {
           order?: FindOptionsOrder<T> | undefined;
         }
       | undefined,
-  ): Promise<T>;
+  ): Promise<T | null>;
   find(
     where: FindOptionsWhere<T>,
     options?:

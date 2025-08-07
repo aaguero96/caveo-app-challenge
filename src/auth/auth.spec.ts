@@ -4,6 +4,8 @@
 import { IAuth } from './auth.interface';
 import { createAuth } from './auth';
 import {
+  AdminAddUserToGroupCommand,
+  AdminConfirmSignUpCommand,
   CognitoIdentityProviderClient,
   InitiateAuthCommand,
   SignUpCommand,
@@ -15,7 +17,7 @@ import {
   stringToUserRoleEnum,
 } from '../utils';
 import { JwksClient } from 'jwks-rsa';
-import jwt, { JsonWebTokenError } from 'jsonwebtoken';
+import jwt from 'jsonwebtoken';
 import { UserRoleEnum } from '../enums';
 
 jest.mock('@aws-sdk/client-cognito-identity-provider');
@@ -29,10 +31,13 @@ describe('Auth', () => {
   beforeEach(() => {
     auth = createAuth({
       aws: {
+        accessKeyId: 'mock-access-key-id',
+        secretAccessKey: 'mock-secret-access-key',
         cognito: {
           clientId: 'mock-client-id',
           clientSecret: 'mock-client-secret',
           tokenSigningKeyUrl: 'mock-token-signing-key-url',
+          userPoolId: 'mock-user-pool-id',
         },
       },
     } as any);
@@ -419,6 +424,105 @@ describe('Auth', () => {
         roles: [],
         email: 'mock-username',
       });
+    });
+  });
+
+  describe('confirmUser', () => {
+    it('success - call signup command to cognito client', async () => {
+      const email = 'test@test.com';
+
+      (
+        CognitoIdentityProviderClient.prototype.send as jest.Mock
+      ).mockResolvedValueOnce({});
+
+      await auth.confirmUser(email);
+
+      expect(AdminConfirmSignUpCommand).toHaveBeenCalledWith(
+        expect.objectContaining({
+          Username: email,
+          UserPoolId: 'mock-user-pool-id',
+        }),
+      );
+      expect(
+        CognitoIdentityProviderClient.prototype.send as jest.Mock,
+      ).toHaveBeenCalledWith(expect.any(AdminConfirmSignUpCommand));
+    });
+
+    it('throw generic error when cognito send was failed', async () => {
+      const email = 'test@test.com';
+
+      (
+        CognitoIdentityProviderClient.prototype.send as jest.Mock
+      ).mockRejectedValueOnce(new Error('mock-error'));
+
+      await expect(auth.confirmUser(email)).rejects.toThrow('mock-error');
+    });
+
+    it('throw aws error when cognito send was failed', async () => {
+      const email = 'test@test.com';
+
+      (
+        CognitoIdentityProviderClient.prototype.send as jest.Mock
+      ).mockRejectedValueOnce(new Error('mock-aws-error'));
+      (handleAwsException as jest.Mock).mockReturnValueOnce(
+        new Error('mock-handle-aws-error'),
+      );
+
+      await expect(auth.confirmUser(email)).rejects.toThrow(
+        'mock-handle-aws-error',
+      );
+    });
+  });
+
+  describe('addRoleToUser', () => {
+    it('success - call signup command to cognito client', async () => {
+      const email = 'test@test.com';
+      const role = UserRoleEnum.ADMIN;
+
+      (
+        CognitoIdentityProviderClient.prototype.send as jest.Mock
+      ).mockResolvedValueOnce({});
+
+      await auth.addRoleToUser(email, role);
+
+      expect(AdminAddUserToGroupCommand).toHaveBeenCalledWith(
+        expect.objectContaining({
+          Username: email,
+          UserPoolId: 'mock-user-pool-id',
+        }),
+      );
+      expect(
+        CognitoIdentityProviderClient.prototype.send as jest.Mock,
+      ).toHaveBeenCalledWith(expect.any(AdminAddUserToGroupCommand));
+    });
+
+    it('throw generic error when cognito send was failed', async () => {
+      const email = 'test@test.com';
+      const role = UserRoleEnum.ADMIN;
+
+      (
+        CognitoIdentityProviderClient.prototype.send as jest.Mock
+      ).mockRejectedValueOnce(new Error('mock-error'));
+
+      await expect(auth.addRoleToUser(email, role)).rejects.toThrow(
+        'mock-error',
+      );
+    });
+
+    it('throw aws error when cognito send was failed', async () => {
+      const email = 'test@test.com';
+      const role = UserRoleEnum.ADMIN;
+
+      (
+        CognitoIdentityProviderClient.prototype.send as jest.Mock
+      ).mockRejectedValueOnce(new Error('mock-aws-error'));
+      (handleAwsException as jest.Mock).mockReturnValueOnce(
+        new Error('mock-handle-aws-error'),
+      );
+
+      await expect(auth.addRoleToUser(email, role)).rejects.toThrow(
+        'mock-handle-aws-error',
+      );
     });
   });
 });

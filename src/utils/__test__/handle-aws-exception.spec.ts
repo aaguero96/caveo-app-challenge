@@ -2,6 +2,7 @@ import * as awsException from '@aws-sdk/client-cognito-identity-provider';
 import {
   InvalidParameterFormatException,
   InvalidPasswordFormatException,
+  UserAlreadyBeenCreatedException,
   UserAlreadyExistException,
   UserInvalidCredentialException,
   UserNotConfirmedException,
@@ -54,6 +55,17 @@ describe('handleAwsException', () => {
       );
 
       expect(response).toBeInstanceOf(UserWithoutAccessException);
+    });
+
+    it('message equals to "User cannot be confirmed. Current status is CONFIRMED"', () => {
+      const response = handleAwsException(
+        new awsException.NotAuthorizedException({
+          message: 'User cannot be confirmed. Current status is CONFIRMED',
+          $metadata: {},
+        }),
+      );
+
+      expect(response).toBeInstanceOf(UserAlreadyBeenCreatedException);
     });
   });
 
