@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { IAuth } from './auth.interface';
@@ -7,10 +8,20 @@ import {
   InitiateAuthCommand,
   SignUpCommand,
 } from '@aws-sdk/client-cognito-identity-provider';
-import { createHmac, handleAwsException } from '../utils';
+import {
+  createHmac,
+  handleAwsException,
+  handleJwtException,
+  stringToUserRoleEnum,
+} from '../utils';
+import { JwksClient } from 'jwks-rsa';
+import jwt, { JsonWebTokenError } from 'jsonwebtoken';
+import { UserRoleEnum } from '../enums';
 
 jest.mock('@aws-sdk/client-cognito-identity-provider');
 jest.mock('../utils');
+jest.mock('jsonwebtoken');
+jest.mock('jwks-rsa');
 
 describe('Auth', () => {
   let auth: IAuth;
@@ -21,6 +32,7 @@ describe('Auth', () => {
         cognito: {
           clientId: 'mock-client-id',
           clientSecret: 'mock-client-secret',
+          tokenSigningKeyUrl: 'mock-token-signing-key-url',
         },
       },
     } as any);
@@ -201,13 +213,212 @@ describe('Auth', () => {
     });
   });
 
-  describe('validate', () => {
-    it('Method not implemented.', async () => {
-      const token = '';
+  describe('decodeToken', () => {
+    it('throw error when has error in getSigningKey from client', async () => {
+      const token = 'mock-token';
 
-      await expect(auth.validate(token)).rejects.toThrow(
-        'Method not implemented.',
+      const mockGetKey = (
+        JwksClient.prototype.getSigningKey as jest.Mock
+      ).mockImplementationOnce((_header, cb) => {
+        cb(new Error('mock-error'));
+      });
+      (jwt.verify as jest.Mock).mockImplementationOnce(
+        (_token, getKey = mockGetKey, _options, callback) => {
+          getKey({}, (err, _key) => {
+            callback(err);
+          });
+        },
       );
+
+      await expect(auth.decodeToken(token)).rejects.toThrow('mock-error');
+    });
+
+    it('throw error when jwt.verify callback has error', async () => {
+      const token = 'mock-token';
+
+      const mockGetKey = (
+        JwksClient.prototype.getSigningKey as jest.Mock
+      ).mockImplementationOnce((_header, cb) => {
+        cb(null, {
+          getPublicKey() {
+            return 'mock-public-key';
+          },
+        });
+      });
+      (jwt.verify as jest.Mock).mockImplementationOnce(
+        (_token, getKey = mockGetKey, _options, callback) => {
+          getKey({}, (_err, _key) => callback(new Error('mock-error')));
+        },
+      );
+
+      await expect(auth.decodeToken(token)).rejects.toThrow('mock-error');
+    });
+
+    it('throw error when cognito:groups is not an array', async () => {
+      const token = 'mock-token';
+
+      const mockGetKey = (
+        JwksClient.prototype.getSigningKey as jest.Mock
+      ).mockImplementationOnce((_header, cb) => {
+        cb(null, {
+          getPublicKey() {
+            return 'mock-public-key';
+          },
+        });
+      });
+      (jwt.verify as jest.Mock).mockImplementationOnce(
+        (_token, getKey = mockGetKey, _options, callback) => {
+          getKey({}, (_err, _key) =>
+            callback(null, {
+              'cognito:groups': 'mock-cognito-groups',
+            }),
+          );
+        },
+      );
+
+      await expect(auth.decodeToken(token)).rejects.toThrow(
+        'token has invalid format. cognito:groups is not array',
+      );
+    });
+
+    it('throw error when cognito:groups is not an array of strings', async () => {
+      const token = 'mock-token';
+
+      const mockGetKey = (
+        JwksClient.prototype.getSigningKey as jest.Mock
+      ).mockImplementationOnce((_header, cb) => {
+        cb(null, {
+          getPublicKey() {
+            return 'mock-public-key';
+          },
+        });
+      });
+      (jwt.verify as jest.Mock).mockImplementationOnce(
+        (_token, getKey = mockGetKey, _options, callback) => {
+          getKey({}, (_err, _key) =>
+            callback(null, {
+              'cognito:groups': [1],
+            }),
+          );
+        },
+      );
+
+      await expect(auth.decodeToken(token)).rejects.toThrow(
+        'token has invalid format. cognito:groups is not array of strings',
+      );
+    });
+
+    it('throw error when username is not an string', async () => {
+      const token = 'mock-token';
+
+      const mockGetKey = (
+        JwksClient.prototype.getSigningKey as jest.Mock
+      ).mockImplementationOnce((_header, cb) => {
+        cb(null, {
+          getPublicKey() {
+            return 'mock-public-key';
+          },
+        });
+      });
+      (jwt.verify as jest.Mock).mockImplementationOnce(
+        (_token, getKey = mockGetKey, _options, callback) => {
+          getKey({}, (_err, _key) =>
+            callback(null, {
+              'cognito:groups': ['mock'],
+              username: 1,
+            }),
+          );
+        },
+      );
+
+      await expect(auth.decodeToken(token)).rejects.toThrow(
+        'token has invalid format. username is not string',
+      );
+    });
+
+    it('throw error when token was expired', async () => {
+      const token = 'mock-token';
+
+      const mockGetKey = (
+        JwksClient.prototype.getSigningKey as jest.Mock
+      ).mockImplementationOnce((_header, cb) => {
+        cb(new Error('mock-error'));
+      });
+      (jwt.verify as jest.Mock).mockImplementationOnce(
+        (_token, getKey = mockGetKey, _options, callback) => {
+          getKey({}, (err, _key) => {
+            callback(err);
+          });
+        },
+      );
+      (handleJwtException as jest.Mock).mockReturnValueOnce(
+        new Error('mock-error'),
+      );
+
+      await expect(auth.decodeToken(token)).rejects.toThrow('mock-error');
+    });
+
+    it('success - return values of decoded jwt (with roles)', async () => {
+      const token = 'mock-token';
+
+      const mockGetKey = (
+        JwksClient.prototype.getSigningKey as jest.Mock
+      ).mockImplementationOnce((_header, cb) => {
+        cb(null, {
+          getPublicKey() {
+            return 'mock-public-key';
+          },
+        });
+      });
+      (jwt.verify as jest.Mock).mockImplementationOnce(
+        (_token, getKey = mockGetKey, _options, callback) => {
+          getKey({}, (_err, _key) =>
+            callback(null, {
+              'cognito:groups': ['mock'],
+              username: 'mock-username',
+            }),
+          );
+        },
+      );
+      (stringToUserRoleEnum as jest.Mock).mockReturnValueOnce('mock');
+
+      const response = await auth.decodeToken(token);
+
+      expect(response).toStrictEqual({
+        roles: ['mock'],
+        email: 'mock-username',
+      });
+    });
+
+    it('success - return values of decoded jwt (without roles)', async () => {
+      const token = 'mock-token';
+
+      const mockGetKey = (
+        JwksClient.prototype.getSigningKey as jest.Mock
+      ).mockImplementationOnce((_header, cb) => {
+        cb(null, {
+          getPublicKey() {
+            return 'mock-public-key';
+          },
+        });
+      });
+      (jwt.verify as jest.Mock).mockImplementationOnce(
+        (_token, getKey = mockGetKey, _options, callback) => {
+          getKey({}, (_err, _key) =>
+            callback(null, {
+              username: 'mock-username',
+            }),
+          );
+        },
+      );
+      (stringToUserRoleEnum as jest.Mock).mockReturnValueOnce('mock');
+
+      const response = await auth.decodeToken(token);
+
+      expect(response).toStrictEqual({
+        roles: [],
+        email: 'mock-username',
+      });
     });
   });
 });

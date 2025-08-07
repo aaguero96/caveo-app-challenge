@@ -6,5 +6,5 @@ export interface IAuth {
     password: string,
   ): Promise<{ token: string; expiresIn: string }>;
   signUp(email: string, password: string): Promise<void>;
-  validate(token: string): Promise<{ email: string; roles: UserRoleEnum[] }>;
+  decodeToken(token: string): Promise<{ email: string; roles: UserRoleEnum[] }>;
 }

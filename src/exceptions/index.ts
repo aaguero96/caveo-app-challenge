@@ -13,3 +13,5 @@ export * from './invalid-password-format.exception';
 export * from './invalid-parameter-format.exception';
 export * from './user-already-exist.exception';
 export * from './access-token-empty.exception';
+export * from './token-invalid-format.exception';
+export * from './token-expired.exception';

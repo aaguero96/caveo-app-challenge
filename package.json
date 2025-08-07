@@ -25,6 +25,8 @@
   "dependencies": {
     "@aws-sdk/client-cognito-identity-provider": "^3.862.0",
     "dotenv": "^17.2.1",
+    "jsonwebtoken": "^9.0.2",
+    "jwks-rsa": "^3.2.0",
     "koa": "^3.0.1",
     "koa-bodyparser": "^4.4.1",
     "koa-router": "^14.0.0",

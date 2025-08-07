@@ -15,8 +15,10 @@ const envSchema = z.object({
   DATABASE_PASSWORD: z.string().default('test'),
   DATABASE_NAME: z.string().default('test'),
   DATABASE_SSL: z.coerce.boolean().default(false),
+  AWS_COGNITO_REGION: z.string().default(''),
   AWS_COGNITO_CLIENT_ID: z.string().default(''),
   AWS_COGNITO_CLIENT_SECRET: z.string().default(''),
+  AWS_COGNITO_TOKEN_SIGNING_KEY_URL: z.string().default(''),
 });
 
 export class EnvConfig {
@@ -34,8 +36,10 @@ export class EnvConfig {
   };
   aws: {
     cognito: {
+      region: string;
       clientId: string;
       clientSecret: string;
+      tokenSigningKeyUrl: string;
     };
   };
 
@@ -64,8 +68,10 @@ export class EnvConfig {
 
     this.aws = {
       cognito: {
+        region: env['AWS_COGNITO_REGION'],
         clientId: env['AWS_COGNITO_CLIENT_ID'],
         clientSecret: env['AWS_COGNITO_CLIENT_SECRET'],
+        tokenSigningKeyUrl: env['AWS_COGNITO_TOKEN_SIGNING_KEY_URL'],
       },
     };
   }

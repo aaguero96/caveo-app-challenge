@@ -10,7 +10,6 @@ import bodyParser from 'koa-bodyparser';
 import { createJwtMiddleware } from './middlewares/jwt/jwt.middleware';
 import { createRoleMiddleware } from './middlewares/role/role.middleware';
 import { createDatabaseConfig, createEnvConfig } from './config';
-import { createAuth } from './auth/auth';
 
 const main = async () => {
   const envConfig = createEnvConfig();
@@ -18,10 +17,6 @@ const main = async () => {
   const databaseConfig = createDatabaseConfig(envConfig);
   await databaseConfig.dataSource.initialize();
   await databaseConfig.dataSource.runMigrations();
-
-  const auth = createAuth(envConfig);
-  // const t = await auth.signUp('test@test.com', 'A@ndre-1234567');
-  // const t = await auth.signIn('test@test.com', 'A@ndre-12345678');
 
   const signInOrRegisterService = createSignInOrRegosterService();
   const editAccountService = createEditAccountService();
