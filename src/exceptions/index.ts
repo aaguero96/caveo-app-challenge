@@ -18,3 +18,4 @@ export * from './token-expired.exception';
 export * from './user-already-been-confimed.exception';
 export * from './zod.exception';
 export * from './user-unauthorized.exception';
+export * from './user-role-permission.exception';

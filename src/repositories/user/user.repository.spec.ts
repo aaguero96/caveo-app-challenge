@@ -139,12 +139,30 @@ describe('UserRepositiory', () => {
   });
 
   describe('update', () => {
-    it('Method not implemented.', async () => {
+    it('update user with updatedAt', async () => {
       (mockRepository.manager?.update as jest.Mock).mockResolvedValueOnce(
         undefined,
       );
 
-      const response = await userRepository.update('1', { id: '2' });
+      const response = await userRepository.update('1', {
+        id: '2',
+        updatedAt: undefined,
+      });
+
+      expect(
+        (mockRepository.manager?.update as jest.Mock).mock.calls,
+      ).toHaveLength(1);
+      expect(response).toBeUndefined();
+    });
+
+    it('update user without updatedAt', async () => {
+      (mockRepository.manager?.update as jest.Mock).mockResolvedValueOnce(
+        undefined,
+      );
+
+      const response = await userRepository.update('1', {
+        id: '2',
+      });
 
       expect(
         (mockRepository.manager?.update as jest.Mock).mock.calls,

@@ -1,11 +1,11 @@
 import { ParameterizedContext, Next, DefaultContext, DefaultState } from 'koa';
 import { UserRoleEnum } from '../../enums';
 import { IRoleMiddleware } from './role-middleware.interface';
-import { UserState } from '../../states/user.state';
 import {
   RoleNotAllowedException,
   RoleNotFoundException,
 } from '../../exceptions';
+import { UserEntity } from '../../entities';
 
 export const createRoleMiddleware = (): IRoleMiddleware => {
   return new RoleMiddleware();
@@ -19,7 +19,7 @@ class RoleMiddleware implements IRoleMiddleware {
   ): ((ctx: ParameterizedContext, next: Next) => Promise<void>) => {
     return async (
       ctx: ParameterizedContext<
-        DefaultState & { user: UserState },
+        DefaultState & { user: UserEntity },
         DefaultContext
       >,
       next: Next,

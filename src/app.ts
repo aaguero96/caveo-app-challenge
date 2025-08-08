@@ -29,7 +29,11 @@ const main = async () => {
     auth,
     userRepository,
   );
-  const editAccountService = createEditAccountService();
+  const editAccountService = createEditAccountService(
+    databaseConfig.dataSource,
+    userRepository,
+    auth,
+  );
   const getMeService = createGetMeService(userRepository);
   const getUsersService = createGetUsersService(userRepository);
   const service = createService(

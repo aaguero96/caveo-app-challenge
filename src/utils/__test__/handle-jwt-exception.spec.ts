@@ -17,4 +17,10 @@ describe('handleJwtException', () => {
 
     expect(response).toBeInstanceOf(TokenExpiredException);
   });
+
+  it('return undefined when error is generic', () => {
+    const response = handleJwtException(new Error('mock-error'));
+
+    expect(response).toBeUndefined();
+  });
 });

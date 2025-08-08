@@ -1,5 +1,9 @@
 import { EditAccountRequestDto, EditAccountResponseDto } from '../../dtos';
+import { UserEntity } from '../../entities';
 
 export interface IEditAccountService {
-  editAccount(dto: EditAccountRequestDto): Promise<EditAccountResponseDto>;
+  editAccount(
+    ctxUser: UserEntity,
+    dto: EditAccountRequestDto,
+  ): Promise<EditAccountResponseDto>;
 }

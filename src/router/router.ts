@@ -4,7 +4,11 @@ import { IJwtMiddleware } from '../middlewares/jwt/jwt-middleware.interface';
 import { IRoleMiddleware } from '../middlewares/role/role-middleware.interface';
 import { UserRoleEnum } from '../enums';
 import { IValidateRequestMiddleware } from '../middlewares/validate-request/validate-request-middleware.interface';
-import { getUsersQuerySchema, signInOrRegisterRequestSchema } from '../dtos';
+import {
+  editAccountRequestSchema,
+  getUsersQuerySchema,
+  signInOrRegisterRequestSchema,
+} from '../dtos';
 import { IValidateQueryMiddleware } from '../middlewares/validate-query/validate-query-middleware.interface';
 
 export const createRouter = (
@@ -33,6 +37,7 @@ export const createRouter = (
   router.post(
     '/edit-account',
     roleMiddleware.validateUserRole([UserRoleEnum.USER, UserRoleEnum.ADMIN]),
+    validateRequestMiddleware.validateRequest(editAccountRequestSchema),
     controller.editAccount,
   );
 

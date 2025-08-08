@@ -96,6 +96,9 @@ export abstract class AbstractRepository<T extends ObjectLiteral> {
       | undefined,
   ): Promise<void> => {
     const fnExec = async (entityManager: EntityManager) => {
+      if ('updatedAt' in data) {
+        data.updatedAt = new Date();
+      }
       await entityManager.update(this._repository.target, id, data);
     };
 

@@ -3,6 +3,7 @@
 import { createController } from './controller';
 import { IController } from './controller.interface';
 import { createMockService, IMockService } from '../services/mocks';
+import { UserRoleEnum } from '../enums';
 
 describe('Controller', () => {
   let mockService: IMockService;
@@ -77,8 +78,38 @@ describe('Controller', () => {
   });
 
   describe('editAccount', () => {
-    it('success case', async () => {
+    it('success case with userId - admin', async () => {
       const ctx = {
+        state: {
+          user: {
+            id: '1',
+            role: UserRoleEnum.ADMIN,
+          },
+        },
+        request: {
+          body: {
+            userId: '1',
+          },
+        },
+      } as any;
+
+      mockService.editAccount.mockResolvedValueOnce({});
+
+      await controller.editAccount(ctx);
+
+      expect(mockService.editAccount.mock.calls).toHaveLength(1);
+      expect(ctx.body).toStrictEqual({});
+      expect(ctx.status).toEqual(200);
+    });
+
+    it('success case without userId - admin', async () => {
+      const ctx = {
+        state: {
+          user: {
+            id: '1',
+            role: UserRoleEnum.ADMIN,
+          },
+        },
         request: {
           body: {},
         },
@@ -91,6 +122,102 @@ describe('Controller', () => {
       expect(mockService.editAccount.mock.calls).toHaveLength(1);
       expect(ctx.body).toStrictEqual({});
       expect(ctx.status).toEqual(200);
+    });
+
+    it('success case with valid userId - user', async () => {
+      const ctx = {
+        state: {
+          user: {
+            id: '1',
+            role: UserRoleEnum.USER,
+          },
+        },
+        request: {
+          body: {
+            userId: '1',
+          },
+        },
+      } as any;
+
+      mockService.editAccount.mockResolvedValueOnce({});
+
+      await controller.editAccount(ctx);
+
+      expect(mockService.editAccount.mock.calls).toHaveLength(1);
+      expect(ctx.body).toStrictEqual({});
+      expect(ctx.status).toEqual(200);
+    });
+
+    it('success case without userId - user', async () => {
+      const ctx = {
+        state: {
+          user: {
+            id: '1',
+            role: UserRoleEnum.USER,
+          },
+        },
+        request: {
+          body: {},
+        },
+      } as any;
+
+      mockService.editAccount.mockResolvedValueOnce({});
+
+      await controller.editAccount(ctx);
+
+      expect(mockService.editAccount.mock.calls).toHaveLength(1);
+      expect(ctx.body).toStrictEqual({});
+      expect(ctx.status).toEqual(200);
+    });
+
+    it('error when userId is not valid - user', async () => {
+      const ctx = {
+        state: {
+          user: {
+            id: '1',
+            role: UserRoleEnum.USER,
+          },
+        },
+        request: {
+          body: {
+            userId: '2',
+          },
+        },
+      } as any;
+
+      await controller.editAccount(ctx);
+
+      expect(ctx.body).toStrictEqual({
+        status: 401,
+        errorCode: 'auth.user_role_permission',
+        message: 'role "usuário" shouldnt update others',
+        body: undefined,
+      });
+      expect(ctx.status).toEqual(401);
+    });
+
+    it('error case - generic', async () => {
+      const ctx = {
+        state: {
+          user: {},
+        },
+        request: {
+          body: {},
+        },
+      } as any;
+
+      mockService.editAccount.mockRejectedValueOnce(new Error('mock-error'));
+
+      await controller.editAccount(ctx);
+
+      expect(mockService.editAccount.mock.calls).toHaveLength(1);
+      expect(ctx.body).toStrictEqual({
+        status: 500,
+        errorCode: 'internal_server_error',
+        message: 'mock-error',
+        body: new Error('mock-error'),
+      });
+      expect(ctx.status).toEqual(500);
     });
   });
 

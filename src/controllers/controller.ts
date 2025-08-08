@@ -10,9 +10,13 @@ import {
   SignInOrRegisterRequestDto,
   SignInOrRegisterResponseDto,
 } from '../dtos';
-import { UserState } from '../states/user.state';
 import { handleExceptionResponse } from '../utils';
-import { UserUnauthorizedException } from '../exceptions';
+import {
+  UserRolePermissionException,
+  UserUnauthorizedException,
+} from '../exceptions';
+import { UserRoleEnum } from '../enums';
+import { UserEntity } from '../entities';
 
 export const createController = (service: IService): IController => {
   return new Controller(service);
@@ -41,18 +45,47 @@ class Controller implements IController {
 
   editAccount = async (
     ctx: ParameterizedContext<
-      UserState,
+      DefaultState & { user: UserEntity },
       DefaultContext & { request: { body: EditAccountRequestDto } },
       EditAccountResponseDto
     >,
   ): Promise<void> => {
-    ctx.status = 200;
-    ctx.body = await this._service.editAccount(ctx.request.body);
+    try {
+      const ctxUser = ctx.state.user;
+
+      if (ctxUser.role === UserRoleEnum.USER) {
+        if (ctx.request.body.userId) {
+          if (ctxUser.id !== ctx.request.body.userId) {
+            throw new UserRolePermissionException({
+              role: ctxUser.role,
+              permissionError: 'shouldnt update others',
+            });
+          }
+        } else {
+          ctx.request.body.userId = ctxUser.id;
+        }
+      } else if (ctxUser.role === UserRoleEnum.ADMIN) {
+        if (!ctx.request.body.userId) {
+          ctx.request.body.userId = ctxUser.id;
+        }
+      }
+
+      const response = await this._service.editAccount(
+        ctxUser,
+        ctx.request.body,
+      );
+
+      ctx.status = 200;
+      ctx.body = response;
+    } catch (err) {
+      handleExceptionResponse(err, ctx);
+      return;
+    }
   };
 
   getMe = async (
     ctx: ParameterizedContext<
-      DefaultState & { user: UserState },
+      DefaultState & { user: UserEntity },
       DefaultContext,
       GetMeResponseDto
     >,
@@ -74,7 +107,7 @@ class Controller implements IController {
 
   getUsers = async (
     ctx: ParameterizedContext<
-      DefaultState & { user: UserState; query: GetUsersQueryDto },
+      DefaultState & { user: UserEntity; query: GetUsersQueryDto },
       DefaultContext,
       GetUsersResponseDto
     >,

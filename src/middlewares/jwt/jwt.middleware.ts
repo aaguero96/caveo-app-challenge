@@ -46,10 +46,7 @@ class JwtMiddleware implements IJwtMiddleware {
         throw new UserUnauthorizedException();
       }
 
-      ctx.state.user = {
-        id: user.id,
-        role: user.role,
-      };
+      ctx.state.user = user;
 
       await next();
     } catch (err) {

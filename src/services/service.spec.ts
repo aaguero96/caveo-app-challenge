@@ -68,25 +68,31 @@ describe('Service', () => {
   describe('editAccount', () => {
     it('success case', async () => {
       const dto = {} as any;
+      const ctxUser = { id: '1' } as any;
 
       mockEditAccountService.editAccount.mockResolvedValueOnce({});
 
-      await expect(service.editAccount(dto)).resolves.toStrictEqual({});
+      await expect(service.editAccount(ctxUser, dto)).resolves.toStrictEqual(
+        {},
+      );
       expect(mockEditAccountService.editAccount.mock.calls).toStrictEqual([
-        [dto],
+        [ctxUser, dto],
       ]);
     });
 
     it('error case', async () => {
-      const dto = {} as any;
+      const dto = { id: '1' } as any;
+      const ctxUser = {} as any;
 
       mockEditAccountService.editAccount.mockRejectedValueOnce(
         new Error('mocked error'),
       );
 
-      await expect(service.editAccount(dto)).rejects.toThrow('mocked error');
+      await expect(service.editAccount(ctxUser, dto)).rejects.toThrow(
+        'mocked error',
+      );
       expect(mockEditAccountService.editAccount.mock.calls).toStrictEqual([
-        [dto],
+        [ctxUser, dto],
       ]);
     });
   });
