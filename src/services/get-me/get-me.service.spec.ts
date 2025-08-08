@@ -1,21 +1,17 @@
 import { UserRoleEnum } from '../../enums';
-import { IUserRepository } from '../../repositories/user/user-repository.interface';
 import { IGetMeService } from './get-me-service.interface';
 import { createGetMeService } from './get-me.service';
+import {
+  IMockUserRepository,
+  createMockUserRepository,
+} from '../../repositories/mocks';
 
 describe('GetMeService', () => {
-  class MockUserRepository implements IUserRepository {
-    create = jest.fn();
-    findOne = jest.fn();
-    find = jest.fn();
-    update = jest.fn();
-  }
-
-  let mockUserRepository: MockUserRepository;
+  let mockUserRepository: IMockUserRepository;
   let getMeService: IGetMeService;
 
   beforeEach(() => {
-    mockUserRepository = new MockUserRepository();
+    mockUserRepository = createMockUserRepository();
     getMeService = createGetMeService(mockUserRepository);
   });
 

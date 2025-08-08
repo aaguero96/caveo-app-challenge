@@ -3,31 +3,19 @@
 import { DataSource, EntityManager, QueryRunner } from 'typeorm';
 import { ISignInOrRegisterService } from './sign-in-or-register-service.interface';
 import { createSignInOrRegosterService } from './sign-in-or-register.service';
-import { IUserRepository } from '../../repositories/user/user-repository.interface';
-import { IAuth } from '../../auth/auth.interface';
 import { UserRoleEnum } from '../../enums';
+import {
+  IMockUserRepository,
+  createMockUserRepository,
+} from '../../repositories/mocks';
+import { IMockAuth, createMockAuth } from '../../auth/mocks';
 
 describe('GetMeService', () => {
-  class MockUserRepository implements IUserRepository {
-    create = jest.fn();
-    findOne = jest.fn();
-    find = jest.fn();
-    update = jest.fn();
-  }
-
-  class MockAuth implements IAuth {
-    signIn = jest.fn();
-    signUp = jest.fn();
-    decodeToken = jest.fn();
-    confirmUser = jest.fn();
-    addRoleToUser = jest.fn();
-  }
-
   let mockManager: EntityManager;
   let mockQueryRunner: QueryRunner;
   let mockDataSource: DataSource;
-  let mockUserRepository: IUserRepository;
-  let mockAuth: IAuth;
+  let mockUserRepository: IMockUserRepository;
+  let mockAuth: IMockAuth;
   let signInOrRegisterService: ISignInOrRegisterService;
 
   beforeEach(() => {
@@ -42,8 +30,8 @@ describe('GetMeService', () => {
     mockDataSource = {
       createQueryRunner: jest.fn().mockImplementation(() => mockQueryRunner),
     } as any;
-    mockUserRepository = new MockUserRepository();
-    mockAuth = new MockAuth();
+    mockUserRepository = createMockUserRepository();
+    mockAuth = createMockAuth();
     signInOrRegisterService = createSignInOrRegosterService(
       mockDataSource,
       mockAuth,

@@ -1,34 +1,18 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { IController } from '../controllers/controller.interface';
-import { IJwtMiddleware } from '../middlewares/jwt/jwt-middleware.interface';
+import {
+  createMockJwtMiddleware,
+  createMockRoleMiddleware,
+  createMockValidateRequestMiddleware,
+} from '../middlewares/mocks';
+import { createMockController } from '../controllers/mocks';
 import { createRouter } from './router';
-import { IRoleMiddleware } from '../middlewares/role/role-middleware.interface';
-import { IValidateRequestMiddleware } from '../middlewares/validate-request/validate-request-middleware.interface';
+
 describe('createRouter', () => {
-  class MockJwtMiddleware implements IJwtMiddleware {
-    validateBearerToken = jest.fn();
-  }
-
-  class MockRoleMiddleware implements IRoleMiddleware {
-    validateUserRole = () => jest.fn();
-  }
-
-  class MockValidateRequestMiddleware implements IValidateRequestMiddleware {
-    validateRequest = () => jest.fn();
-  }
-
-  class MockController implements IController {
-    signInOrRegister = jest.fn();
-    editAccount = jest.fn();
-    getMe = jest.fn();
-    getUsers = jest.fn();
-  }
-
-  const mockController = new MockController();
-  const mockJwtMiddleware = new MockJwtMiddleware();
-  const mockRoleMiddleware = new MockRoleMiddleware();
-  const mockValidateRequestMiddleware = new MockValidateRequestMiddleware();
+  const mockController = createMockController();
+  const mockJwtMiddleware = createMockJwtMiddleware();
+  const mockRoleMiddleware = createMockRoleMiddleware();
+  const mockValidateRequestMiddleware = createMockValidateRequestMiddleware();
 
   const router = createRouter(
     mockJwtMiddleware,
