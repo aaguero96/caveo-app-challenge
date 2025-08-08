@@ -1,0 +1,177 @@
+{
+	"info": {
+		"_postman_id": "b150a7df-1de5-49b0-b24a-0804d740d380",
+		"name": "caveo api",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "19700869"
+	},
+	"item": [
+		{
+			"name": "auth",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"try {",
+							"    const response = pm.response.json();",
+							"",
+							"    const token = response.token;",
+							"",
+							"    pm.environment.set(\"token\", token);",
+							"} catch (err) {",
+							"    console.log(err)",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"email\": \"andre@test.com\",\n    \"password\": \"grta2163891!afcasA\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{URL}}/api/auth",
+					"host": [
+						"{{URL}}"
+					],
+					"path": [
+						"api",
+						"auth"
+					]
+				},
+				"description": "## API Endpoint: Authenticate User\n\nThis endpoint is used to authenticate a user by verifying their credentials. Upon successful authentication, the user will receive a token that can be used for subsequent requests.\n\n### Request Format\n\n- **Method**: POST\n    \n- **URL**: `{{URL}}/api/auth`\n    \n\n#### Request Body\n\nThe request body must be in JSON format and should include the following parameters:\n\n- **email** (string): The email address of the user. This is required for identifying the user.\n    \n- **password** (string): The password associated with the user's account. This is required for authentication.\n    \n\n**Example Request Body:**\n\n``` json\n{\n  \"email\": \"user@example.com\",\n  \"password\": \"your_password_here\"\n}\n\n ```\n\n### Response Structure\n\nOn successful authentication, the response will typically include:\n\n- **token** (string): A JWT token that can be used for authorizing subsequent requests.\n    \n- **user** (object): An object containing user details such as user ID, name, and email.\n    \n\n**Example Response:**\n\n``` json\n{\n  \"token\": \"your_jwt_token_here\",\n  \"user\": {\n    \"id\": \"user_id_here\",\n    \"name\": \"User Name\",\n    \"email\": \"user@example.com\"\n  }\n}\n\n ```\n\n### Error Handling\n\nIn case of authentication failure, the response may include an error message detailing the reason for the failure (e.g., invalid credentials)."
+			},
+			"response": []
+		},
+		{
+			"name": "edit account",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"ANDRE AGUERO\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{URL}}/api/edit-account",
+					"host": [
+						"{{URL}}"
+					],
+					"path": [
+						"api",
+						"edit-account"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "me",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"userId\": \"123\",\n    \"name\": \"345\",\n    \"role\": \"admin\"\n}"
+				},
+				"url": {
+					"raw": "{{URL}}/api/me",
+					"host": [
+						"{{URL}}"
+					],
+					"path": [
+						"api",
+						"me"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "users",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"userId\": \"123\",\n    \"name\": \"345\",\n    \"role\": \"admin\"\n}"
+				},
+				"url": {
+					"raw": "{{URL}}/api/users",
+					"host": [
+						"{{URL}}"
+					],
+					"path": [
+						"api",
+						"users"
+					],
+					"query": [
+						{
+							"key": "page",
+							"value": "1",
+							"disabled": true
+						},
+						{
+							"key": "itemsPerPage",
+							"value": "10",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
