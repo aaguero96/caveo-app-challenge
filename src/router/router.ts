@@ -4,12 +4,14 @@ import { IJwtMiddleware } from '../middlewares/jwt/jwt-middleware.interface';
 import { IRoleMiddleware } from '../middlewares/role/role-middleware.interface';
 import { UserRoleEnum } from '../enums';
 import { IValidateRequestMiddleware } from '../middlewares/validate-request/validate-request-middleware.interface';
-import { signInOrRegisterRequestSchema } from '../dtos';
+import { getUsersQuerySchema, signInOrRegisterRequestSchema } from '../dtos';
+import { IValidateQueryMiddleware } from '../middlewares/validate-query/validate-query-middleware.interface';
 
 export const createRouter = (
   jwtMiddleware: IJwtMiddleware,
   roleMiddleware: IRoleMiddleware,
   validateRequestMiddleware: IValidateRequestMiddleware,
+  validateQueryMiddleware: IValidateQueryMiddleware,
   controller: IController,
 ): Router => {
   const router = new Router();
@@ -39,6 +41,7 @@ export const createRouter = (
   router.get(
     '/users',
     roleMiddleware.validateUserRole([UserRoleEnum.ADMIN]),
+    validateQueryMiddleware.validateQuery(getUsersQuerySchema),
     controller.getUsers,
   );
 

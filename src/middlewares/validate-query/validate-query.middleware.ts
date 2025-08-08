@@ -1,17 +1,17 @@
 import { ParameterizedContext, Next, DefaultContext, DefaultState } from 'koa';
-import { IValidateRequestMiddleware } from './validate-request-middleware.interface';
+import { IValidateQueryMiddleware } from './validate-query-middleware.interface';
 import z from 'zod';
 import { ZodExcepiton } from '../../exceptions';
 import { handleExceptionResponse } from '../../utils';
 
-export const createValidatieRequestMiddleware = () => {
-  return new ValidateRequestMiddleware();
+export const createValidatieQueryMiddleware = () => {
+  return new ValidateQueryMiddleware();
 };
 
-class ValidateRequestMiddleware implements IValidateRequestMiddleware {
+class ValidateQueryMiddleware implements IValidateQueryMiddleware {
   constructor() {}
 
-  validateRequest = (
+  validateQuery = (
     schema: z.ZodObject,
   ): ((ctx: ParameterizedContext, next: Next) => Promise<void>) => {
     return async (
@@ -19,12 +19,12 @@ class ValidateRequestMiddleware implements IValidateRequestMiddleware {
       next: Next,
     ): Promise<void> => {
       try {
-        const result = schema.safeParse(ctx.request.body);
+        const result = schema.safeParse(ctx.query);
         if (!result.success) {
           throw new ZodExcepiton(result.error);
         }
 
-        ctx.request.body = result.data;
+        ctx.state.query = result.data;
         await next();
       } catch (err) {
         handleExceptionResponse(err, ctx);

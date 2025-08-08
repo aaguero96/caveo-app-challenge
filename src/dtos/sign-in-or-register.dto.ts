@@ -13,7 +13,6 @@ export const signInOrRegisterRequestSchema = z.object({
       'Password must contain at least one special character',
     ),
 });
-
 export type SignInOrRegisterRequestDto = z.infer<
   typeof signInOrRegisterRequestSchema
 >;

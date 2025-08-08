@@ -62,8 +62,10 @@ class Controller implements IController {
         throw new UserUnauthorizedException();
       }
 
+      const response = await this._service.getMe(ctx.state.user.id);
+
       ctx.status = 200;
-      ctx.body = await this._service.getMe(ctx.state.user.id);
+      ctx.body = response;
     } catch (err) {
       handleExceptionResponse(err, ctx);
       return;
@@ -72,12 +74,19 @@ class Controller implements IController {
 
   getUsers = async (
     ctx: ParameterizedContext<
-      UserState,
-      DefaultContext & { query: GetUsersQueryDto },
+      DefaultState & { user: UserState; query: GetUsersQueryDto },
+      DefaultContext,
       GetUsersResponseDto
     >,
   ): Promise<void> => {
-    ctx.status = 200;
-    ctx.body = await this._service.getUsers(ctx.query);
+    try {
+      const response = await this._service.getUsers(ctx.state.query);
+
+      ctx.status = 200;
+      ctx.body = response;
+    } catch (err) {
+      handleExceptionResponse(err, ctx);
+      return;
+    }
   };
 }

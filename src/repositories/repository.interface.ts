@@ -42,4 +42,18 @@ export interface IRepository<T> {
         }
       | undefined,
   ): Promise<void>;
+  findAndCount(
+    where: FindOptionsWhere<T>,
+    options?:
+      | {
+          manager?: EntityManager | undefined;
+          order?: FindOptionsOrder<T> | undefined;
+          skip?: number | undefined;
+          take?: number | undefined;
+        }
+      | undefined,
+  ): Promise<{
+    data: T[];
+    count: number;
+  }>;
 }
