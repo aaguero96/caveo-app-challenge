@@ -1,5 +1,6 @@
 import { DataSource } from 'typeorm';
 import { EnvConfig } from './env.config';
+import { join } from 'path';
 
 export const createDatabaseConfig = (envConfig: EnvConfig): DatabaseConfig => {
   return new DatabaseConfig(envConfig);
@@ -16,8 +17,8 @@ class DatabaseConfig {
       username: _envConfig.database.username,
       password: _envConfig.database.password,
       database: _envConfig.database.name,
-      entities: ['src/entities/*.entity.ts'],
-      migrations: ['src/migrations/**/*.ts'],
+      entities: [join(__dirname, '/../entities/*.entity{.js,.ts}')],
+      migrations: [join(__dirname, '/../migrations/*.entity{.js,.ts}')],
       migrationsTableName: 'Migration',
       migrationsTransactionMode: 'each',
       ssl: _envConfig.database.ssl
