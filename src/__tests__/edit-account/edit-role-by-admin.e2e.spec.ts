@@ -73,7 +73,7 @@ describe('POST /edit-account', () => {
     // resolve mooks
     mockAuthDecodeToken.mockResolvedValue({
       email: 'test@test.com',
-      role: [UserRoleEnum.USER],
+      roles: [UserRoleEnum.ADMIN],
     });
 
     // request body

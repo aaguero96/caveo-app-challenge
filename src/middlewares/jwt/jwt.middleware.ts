@@ -46,7 +46,7 @@ class JwtMiddleware implements IJwtMiddleware {
         throw new UserUnauthorizedException();
       }
 
-      if (tokenData.roles.length > 0 && tokenData.roles[0]) {
+      if (tokenData.roles && tokenData.roles.length > 0 && tokenData.roles[0]) {
         user.role = tokenData.roles[0];
       }
       ctx.state.user = user;

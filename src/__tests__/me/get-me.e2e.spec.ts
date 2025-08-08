@@ -69,7 +69,7 @@ describe('GET /me', () => {
     // resolve mooks
     mockAuthDecodeToken.mockResolvedValue({
       email: 'test@test.com',
-      role: [UserRoleEnum.USER],
+      roles: [UserRoleEnum.USER],
     });
 
     // call endpoint

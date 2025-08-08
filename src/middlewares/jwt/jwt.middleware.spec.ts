@@ -132,5 +132,29 @@ describe('JwtMiddleware', () => {
 
       expect(next).toHaveBeenCalledTimes(1);
     });
+
+    it('success - pick token role', async () => {
+      const ctx = {
+        headers: {
+          authorization: 'Bearer token',
+        },
+        state: {},
+      } as any;
+
+      const next = jest.fn();
+
+      mockAuth.decodeToken.mockResolvedValueOnce({
+        email: 'mock@test.com',
+        roles: [UserRoleEnum.ADMIN],
+      });
+      mockUserRepository.findOne.mockResolvedValueOnce({
+        id: '1',
+        role: UserRoleEnum.ADMIN,
+      });
+
+      await jwtMiddleware.validateBearerToken(ctx, next);
+
+      expect(next).toHaveBeenCalledTimes(1);
+    });
   });
 });

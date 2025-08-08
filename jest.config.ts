@@ -16,6 +16,7 @@ const config: Config = {
     'src/exceptions',
     'src/swagger',
     'src/__tests__',
+    'src/main.ts',
   ],
   testPathIgnorePatterns: ['/node_modules/', '/src/__tests__/'],
 };
