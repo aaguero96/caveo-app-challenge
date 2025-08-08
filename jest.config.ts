@@ -14,6 +14,7 @@ const config: Config = {
     'src/config',
     'src/entities',
     'src/exceptions',
+    'src/swagger',
   ],
 };
 

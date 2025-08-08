@@ -7,7 +7,6 @@ import {
   Repository,
   FindManyOptions,
 } from 'typeorm';
-import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity.js';
 
 export abstract class AbstractRepository<T extends ObjectLiteral> {
   constructor(protected readonly _repository: Repository<T>) {}
@@ -88,7 +87,7 @@ export abstract class AbstractRepository<T extends ObjectLiteral> {
 
   update = async (
     id: string,
-    data: QueryDeepPartialEntity<T>,
+    data: T,
     options?:
       | {
           manager?: EntityManager | undefined;
@@ -96,9 +95,9 @@ export abstract class AbstractRepository<T extends ObjectLiteral> {
       | undefined,
   ): Promise<void> => {
     const fnExec = async (entityManager: EntityManager) => {
-      if ('updatedAt' in data) {
-        data.updatedAt = new Date();
-      }
+      // if ('updatedAt' in data) {
+      //   data.updatedAt = new Date();
+      // }
       await entityManager.update(this._repository.target, id, data);
     };
 

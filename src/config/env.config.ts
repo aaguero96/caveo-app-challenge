@@ -7,7 +7,7 @@ export const createEnvConfig = (): EnvConfig => {
 };
 
 const envSchema = z.object({
-  NODE_ENV: z.enum([EnvironmentEnum.DEVELOPMENT, EnvironmentEnum.TEST]),
+  NODE_ENV: z.enum(EnvironmentEnum),
   PORT: z.coerce.number().default(3000),
   DATABASE_HOST: z.string().default('localhost'),
   DATABASE_PORT: z.coerce.number().default(5432),
