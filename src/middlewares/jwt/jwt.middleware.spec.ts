@@ -1,34 +1,22 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { IAuth } from '../../auth/auth.interface';
 import { UserRoleEnum } from '../../enums';
-import { IUserRepository } from '../../repositories/user/user-repository.interface';
 import { IJwtMiddleware } from './jwt-middleware.interface';
 import { createJwtMiddleware } from './jwt.middleware';
+import { IMockAuth, createMockAuth } from '../../auth/mocks';
+import {
+  IMockUserRepository,
+  createMockUserRepository,
+} from '../../repositories/mocks';
 
 describe('JwtMiddleware', () => {
-  class MockUserRepository implements IUserRepository {
-    create = jest.fn();
-    findOne = jest.fn();
-    find = jest.fn();
-    update = jest.fn();
-  }
-
-  class MockAuth implements IAuth {
-    signIn = jest.fn();
-    signUp = jest.fn();
-    decodeToken = jest.fn();
-    confirmUser = jest.fn();
-    addRoleToUser = jest.fn();
-  }
-
-  let mockUserRepository: MockUserRepository;
-  let mockAuth: MockAuth;
+  let mockUserRepository: IMockUserRepository;
+  let mockAuth: IMockAuth;
   let jwtMiddleware: IJwtMiddleware;
 
   beforeEach(() => {
-    mockUserRepository = new MockUserRepository();
-    mockAuth = new MockAuth();
+    mockUserRepository = createMockUserRepository();
+    mockAuth = createMockAuth();
     jwtMiddleware = createJwtMiddleware(mockAuth, mockUserRepository);
   });
 

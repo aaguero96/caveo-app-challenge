@@ -1,22 +1,15 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { createController } from './controller';
-import { IService } from '../services/service.interface';
 import { IController } from './controller.interface';
+import { createMockService, IMockService } from '../services/mocks';
 
 describe('Controller', () => {
-  class MockService implements IService {
-    signInOrRegister = jest.fn();
-    editAccount = jest.fn();
-    getMe = jest.fn();
-    getUsers = jest.fn();
-  }
-
-  let mockService: MockService;
+  let mockService: IMockService;
   let controller: IController;
 
   beforeEach(() => {
-    mockService = new MockService();
+    mockService = createMockService();
     controller = createController(mockService);
   });
 

@@ -1,40 +1,30 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { IEditAccountService } from './edit-account/edit-account-service.interface';
-import { IGetMeService } from './get-me/get-me-service.interface';
-import { IGetUsersService } from './get-users/get-users.service.interface';
+import {
+  IMockSignInOrRegisterService,
+  createMockSignInOrRegisterService,
+  IMockEditAccountService,
+  createMockEditAccountService,
+  IMockGetMeService,
+  createMockGetMeService,
+  IMockGetUsersService,
+  createMockGetUsersService,
+} from './mocks';
 import { createService } from './service';
 import { IService } from './service.interface';
-import { ISignInOrRegisterService } from './sign-in-or-register/sign-in-or-register-service.interface';
 
 describe('Service', () => {
-  class MockSignInOrRegisterService implements ISignInOrRegisterService {
-    signInOrRegister = jest.fn();
-  }
-
-  class MockEditAccountService implements IEditAccountService {
-    editAccount = jest.fn();
-  }
-
-  class MockGetMeService implements IGetMeService {
-    getMe = jest.fn();
-  }
-
-  class MockGetUsersService implements IGetUsersService {
-    getUsers = jest.fn();
-  }
-
-  let mockSignInOrRegisterService: MockSignInOrRegisterService;
-  let mockEditAccountService: MockEditAccountService;
-  let mockGetMeService: MockGetMeService;
-  let mockGetUsersService: MockGetUsersService;
+  let mockSignInOrRegisterService: IMockSignInOrRegisterService;
+  let mockEditAccountService: IMockEditAccountService;
+  let mockGetMeService: IMockGetMeService;
+  let mockGetUsersService: IMockGetUsersService;
   let service: IService;
 
   beforeEach(() => {
-    mockSignInOrRegisterService = new MockSignInOrRegisterService();
-    mockEditAccountService = new MockEditAccountService();
-    mockGetMeService = new MockGetMeService();
-    mockGetUsersService = new MockGetUsersService();
+    mockSignInOrRegisterService = createMockSignInOrRegisterService();
+    mockEditAccountService = createMockEditAccountService();
+    mockGetMeService = createMockGetMeService();
+    mockGetUsersService = createMockGetUsersService();
     service = createService(
       mockSignInOrRegisterService,
       mockEditAccountService,
