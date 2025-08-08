@@ -6,7 +6,7 @@ export const createDatabaseConfig = (envConfig: EnvConfig): DatabaseConfig => {
   return new DatabaseConfig(envConfig);
 };
 
-class DatabaseConfig {
+export class DatabaseConfig {
   private _dataSource: DataSource;
 
   constructor(private readonly _envConfig: EnvConfig) {

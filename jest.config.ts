@@ -15,7 +15,9 @@ const config: Config = {
     'src/entities',
     'src/exceptions',
     'src/swagger',
+    'src/__tests__',
   ],
+  testPathIgnorePatterns: ['/node_modules/', '/src/__tests__/'],
 };
 
 export default config;

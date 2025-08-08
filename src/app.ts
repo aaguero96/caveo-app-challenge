@@ -22,7 +22,7 @@ import {
   GetUsersSwagger,
 } from './swagger';
 
-const main = async () => {
+export const createApp = async (): Promise<Koa> => {
   const envConfig = createEnvConfig();
   const databaseConfig = createDatabaseConfig(envConfig);
   await databaseConfig.dataSource.initialize();
@@ -95,7 +95,5 @@ const main = async () => {
 
   app.use(swaggerRouter.routes());
 
-  app.listen(3000);
+  return app;
 };
-
-main();
