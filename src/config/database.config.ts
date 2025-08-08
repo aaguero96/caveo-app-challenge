@@ -18,9 +18,10 @@ class DatabaseConfig {
       password: _envConfig.database.password,
       database: _envConfig.database.name,
       entities: [join(__dirname, '/../entities/*.entity{.js,.ts}')],
-      migrations: [join(__dirname, '/../migrations/*.entity{.js,.ts}')],
+      migrations: [join(__dirname, '/../migrations/*{.ts,.js}')],
       migrationsTableName: 'Migration',
       migrationsTransactionMode: 'each',
+      migrationsRun: true,
       ssl: _envConfig.database.ssl
         ? {
             rejectUnauthorized: false,
