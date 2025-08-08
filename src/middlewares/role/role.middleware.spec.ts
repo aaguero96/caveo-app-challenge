@@ -18,7 +18,9 @@ describe('RoleMiddleware', () => {
   describe('validateUserRole', () => {
     it('error when role not found in ctx state', async () => {
       const ctx = {
-        state: {},
+        state: {
+          user: {},
+        },
       } as any;
 
       const next = jest.fn();
@@ -31,7 +33,9 @@ describe('RoleMiddleware', () => {
     it('error when role not allowed', async () => {
       const ctx = {
         state: {
-          role: UserRoleEnum.USER,
+          user: {
+            role: UserRoleEnum.USER,
+          },
         },
       } as any;
 
@@ -45,7 +49,9 @@ describe('RoleMiddleware', () => {
     it('success', async () => {
       const ctx = {
         state: {
-          role: UserRoleEnum.ADMIN,
+          user: {
+            role: UserRoleEnum.ADMIN,
+          },
         },
       } as any;
 

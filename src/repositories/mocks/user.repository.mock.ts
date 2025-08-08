@@ -5,6 +5,7 @@ export interface IMockUserRepository extends IUserRepository {
   findOne: jest.Mock;
   find: jest.Mock;
   update: jest.Mock;
+  findAndCount: jest.Mock;
 }
 
 class MockUserRepository implements IMockUserRepository {
@@ -12,6 +13,7 @@ class MockUserRepository implements IMockUserRepository {
   findOne = jest.fn();
   find = jest.fn();
   update = jest.fn();
+  findAndCount = jest.fn();
 }
 
 export const createMockUserRepository = (): IMockUserRepository => {

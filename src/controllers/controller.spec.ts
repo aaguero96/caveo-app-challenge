@@ -156,7 +156,9 @@ describe('Controller', () => {
   describe('getUsers', () => {
     it('success case', async () => {
       const ctx = {
-        query: {},
+        state: {
+          user: {},
+        },
       } as any;
 
       mockService.getUsers.mockResolvedValueOnce({});
@@ -166,6 +168,27 @@ describe('Controller', () => {
       expect(mockService.getUsers.mock.calls).toHaveLength(1);
       expect(ctx.body).toStrictEqual({});
       expect(ctx.status).toEqual(200);
+    });
+
+    it('error case', async () => {
+      const ctx = {
+        state: {
+          user: {},
+        },
+      } as any;
+
+      mockService.getUsers.mockRejectedValueOnce(new Error('mock-error'));
+
+      await controller.getUsers(ctx);
+
+      expect(mockService.getUsers.mock.calls).toHaveLength(1);
+      expect(ctx.body).toStrictEqual({
+        status: 500,
+        errorCode: 'internal_server_error',
+        message: 'mock-error',
+        body: new Error('mock-error'),
+      });
+      expect(ctx.status).toEqual(500);
     });
   });
 });

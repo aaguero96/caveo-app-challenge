@@ -21,6 +21,7 @@ describe('UserRepositiory', () => {
         findOne: jest.fn(),
         find: jest.fn(),
         update: jest.fn(),
+        findAndCount: jest.fn(),
       } as any,
     };
     mockDataSource = {
@@ -149,6 +150,133 @@ describe('UserRepositiory', () => {
         (mockRepository.manager?.update as jest.Mock).mock.calls,
       ).toHaveLength(1);
       expect(response).toBeUndefined();
+    });
+  });
+
+  describe('findAndCount', () => {
+    it('find users and count', async () => {
+      (mockRepository.manager?.findAndCount as jest.Mock).mockResolvedValueOnce(
+        [
+          [
+            {
+              id: '1',
+            },
+            {
+              id: '2',
+            },
+          ],
+          2,
+        ],
+      );
+
+      const response = await userRepository.findAndCount({});
+
+      expect(
+        (mockRepository.manager?.findAndCount as jest.Mock).mock.calls,
+      ).toHaveLength(1);
+      expect(response).toStrictEqual({
+        data: [
+          {
+            id: '1',
+          },
+          {
+            id: '2',
+          },
+        ],
+        count: 2,
+      });
+    });
+
+    it('find users and count with take', async () => {
+      (mockRepository.manager?.findAndCount as jest.Mock).mockResolvedValueOnce(
+        [
+          [
+            {
+              id: '1',
+            },
+            {
+              id: '2',
+            },
+          ],
+          2,
+        ],
+      );
+
+      const response = await userRepository.findAndCount({}, { take: 2 });
+
+      expect(
+        (mockRepository.manager?.findAndCount as jest.Mock).mock.calls,
+      ).toHaveLength(1);
+      expect(response).toStrictEqual({
+        data: [
+          {
+            id: '1',
+          },
+          {
+            id: '2',
+          },
+        ],
+        count: 2,
+      });
+    });
+  });
+
+  it('find users and count with order', async () => {
+    (mockRepository.manager?.findAndCount as jest.Mock).mockResolvedValueOnce([
+      [
+        {
+          id: '1',
+        },
+        {
+          id: '2',
+        },
+      ],
+      2,
+    ]);
+
+    const response = await userRepository.findAndCount(
+      {},
+      { order: { id: 'ASC' } },
+    );
+
+    expect(
+      (mockRepository.manager?.findAndCount as jest.Mock).mock.calls,
+    ).toHaveLength(1);
+    expect(response).toStrictEqual({
+      data: [
+        {
+          id: '1',
+        },
+        {
+          id: '2',
+        },
+      ],
+      count: 2,
+    });
+  });
+
+  it('find users and count with skip', async () => {
+    (mockRepository.manager?.findAndCount as jest.Mock).mockResolvedValueOnce([
+      [
+        {
+          id: '2',
+        },
+      ],
+      1,
+    ]);
+
+    const response = await userRepository.findAndCount({}, { skip: 1 });
+
+    expect(
+      (mockRepository.manager?.findAndCount as jest.Mock).mock.calls,
+    ).toHaveLength(1);
+    expect(response).toStrictEqual({
+      data: [
+        {
+          id: '2',
+        },
+      ],
+      count: 1,
     });
   });
 });

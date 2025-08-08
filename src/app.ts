@@ -13,6 +13,7 @@ import { createDatabaseConfig, createEnvConfig } from './config';
 import { createAuth } from './auth/auth';
 import { createUserRepository } from './repositories/user/user.repository';
 import { createValidatieRequestMiddleware } from './middlewares/validate-request/validate-request.middleware';
+import { createValidatieQueryMiddleware } from './middlewares/validate-query/validate-query.middleware';
 
 const main = async () => {
   const envConfig = createEnvConfig();
@@ -30,7 +31,7 @@ const main = async () => {
   );
   const editAccountService = createEditAccountService();
   const getMeService = createGetMeService(userRepository);
-  const getUsersService = createGetUsersService();
+  const getUsersService = createGetUsersService(userRepository);
   const service = createService(
     signInOrRegisterService,
     editAccountService,
@@ -41,6 +42,7 @@ const main = async () => {
   const jwtMiddeware = createJwtMiddleware(auth, userRepository);
   const roleMiddeware = createRoleMiddleware();
   const validateRequestMiddeware = createValidatieRequestMiddleware();
+  const validateQueryMiddeware = createValidatieQueryMiddleware();
 
   const controller = createController(service);
 
@@ -48,6 +50,7 @@ const main = async () => {
     jwtMiddeware,
     roleMiddeware,
     validateRequestMiddeware,
+    validateQueryMiddeware,
     controller,
   );
 

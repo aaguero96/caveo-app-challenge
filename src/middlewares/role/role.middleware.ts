@@ -1,4 +1,4 @@
-import { ParameterizedContext, Next, DefaultContext } from 'koa';
+import { ParameterizedContext, Next, DefaultContext, DefaultState } from 'koa';
 import { UserRoleEnum } from '../../enums';
 import { IRoleMiddleware } from './role-middleware.interface';
 import { UserState } from '../../states/user.state';
@@ -18,10 +18,13 @@ class RoleMiddleware implements IRoleMiddleware {
     allowedUserRoles: UserRoleEnum[],
   ): ((ctx: ParameterizedContext, next: Next) => Promise<void>) => {
     return async (
-      ctx: ParameterizedContext<UserState, DefaultContext>,
+      ctx: ParameterizedContext<
+        DefaultState & { user: UserState },
+        DefaultContext
+      >,
       next: Next,
     ): Promise<void> => {
-      const role = ctx.state.role;
+      const role = ctx.state.user.role;
       if (!role) {
         throw new RoleNotFoundException();
       }

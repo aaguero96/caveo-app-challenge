@@ -3,6 +3,7 @@
 import {
   createMockJwtMiddleware,
   createMockRoleMiddleware,
+  createMockValidateQueryMiddleware,
   createMockValidateRequestMiddleware,
 } from '../middlewares/mocks';
 import { createMockController } from '../controllers/mocks';
@@ -13,11 +14,13 @@ describe('createRouter', () => {
   const mockJwtMiddleware = createMockJwtMiddleware();
   const mockRoleMiddleware = createMockRoleMiddleware();
   const mockValidateRequestMiddleware = createMockValidateRequestMiddleware();
+  const mockValidateQueryMiddleware = createMockValidateQueryMiddleware();
 
   const router = createRouter(
     mockJwtMiddleware,
     mockRoleMiddleware,
     mockValidateRequestMiddleware,
+    mockValidateQueryMiddleware,
     mockController,
   );
 
