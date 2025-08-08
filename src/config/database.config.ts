@@ -20,9 +20,11 @@ class DatabaseConfig {
       migrations: ['src/migrations/**/*.ts'],
       migrationsTableName: 'Migration',
       migrationsTransactionMode: 'each',
-      ssl: _envConfig.database.ssl && {
-        rejectUnauthorized: false,
-      },
+      ssl: _envConfig.database.ssl
+        ? {
+            rejectUnauthorized: false,
+          }
+        : false,
     });
   }
 

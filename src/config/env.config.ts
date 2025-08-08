@@ -7,7 +7,7 @@ export const createEnvConfig = (): EnvConfig => {
 };
 
 const envSchema = z.object({
-  NODE_ENV: z.enum(EnvironmentEnum),
+  NODE_ENV: z.enum(EnvironmentEnum).default(EnvironmentEnum.DEVELOPMENT),
   PORT: z.coerce.number().default(3000),
   DATABASE_HOST: z.string().default('localhost'),
   DATABASE_PORT: z.coerce.number().default(5432),
@@ -50,11 +50,7 @@ export class EnvConfig {
   };
 
   constructor() {
-    dotenv.config({
-      path: process.env['NODE_ENV']
-        ? `.env.${process.env['NODE_ENV']}`
-        : '.env',
-    });
+    dotenv.config();
 
     const env = envSchema.parse(process.env);
 
