@@ -112,3 +112,4 @@ caveo api.postman_collection.json
 
 - [ ] Implementar Lambda para que, caso seja atualizado um valor no AWS Cognito, essa atualização seja refletida no banco de dados.
 - [ ] Implementar mensageria para que, a cada criação de usuário, seja acionada uma trigger para notificar áreas responsáveis, bancos próprios, data lake, etc.
+- [ ] Salvar valores de old e new user me uma tabela nova.
