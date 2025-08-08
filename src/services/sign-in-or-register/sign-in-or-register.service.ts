@@ -51,10 +51,8 @@ class SignInOrRegisterService implements ISignInOrRegisterService {
         statusCodeResponse = 201;
       }
 
-      const { token, expiresIn } = await this._auth.signIn(
-        dto.email,
-        dto.password,
-      );
+      const t = await this._auth.signIn(dto.email, dto.password);
+      const { token, expiresIn } = t;
 
       await queryRunner.commitTransaction();
 

@@ -1,40 +1,16 @@
 import Koa from 'koa';
-import { createApp } from '../app';
-import { createDatabaseConfig, EnvConfig, DatabaseConfig } from '../config';
-import { EnvironmentEnum, UserRoleEnum } from '../enums';
-import { IAuth } from '../auth/auth.interface';
+import { createApp } from '../../app';
+import { createDatabaseConfig, EnvConfig, DatabaseConfig } from '../../config';
+import { UserRoleEnum } from '../../enums';
+import { IAuth } from '../../auth/auth.interface';
 import request from 'supertest';
 import { DataSource } from 'typeorm';
-import { createAuth } from '../auth/auth';
-import { UserEntity } from '../entities';
+import { UserEntity } from '../../entities';
+import { createEnvsForTest } from '../utils';
 
-const envs = {
-  api: {
-    nodeEnv: EnvironmentEnum.TEST,
-    port: 3000,
-  },
-  database: {
-    host: 'localhost',
-    name: 'test',
-    password: 'test',
-    port: 5432,
-    username: 'test',
-    ssl: false,
-  },
-  aws: {
-    accessKeyId: '',
-    secretAccessKey: '',
-    cognito: {
-      region: '',
-      clientId: '',
-      clientSecret: '',
-      tokenSigningKeyUrl: '',
-      userPoolId: '',
-    },
-  },
-};
+const envs = createEnvsForTest();
 
-const auth = {
+const mockAuth = {
   addRoleToUser: jest.fn(),
   decodeToken: jest.fn(),
   signIn: jest.fn(),
@@ -42,20 +18,22 @@ const auth = {
   signUp: jest.fn(),
 };
 
-jest.mock('../config/env.config', () => {
+jest.mock('../../config/env.config', () => {
   return {
     createEnvConfig: (): EnvConfig => {
       return envs;
     },
   };
 });
-jest.mock('../auth/auth', () => {
+jest.mock('../../auth/auth', () => {
   return {
     createAuth: (): IAuth => {
-      return auth;
+      return mockAuth;
     },
   };
 });
+
+import { createAuth } from '../../auth/auth';
 
 describe('POST /auth', () => {
   let databaseConfig: DatabaseConfig;
@@ -75,23 +53,21 @@ describe('POST /auth', () => {
   afterEach(async () => {
     await dataSource.manager.deleteAll(UserEntity);
     await dataSource.destroy();
+    jest.clearAllMocks();
   });
 
-  it('create user when its not regitered yet', async () => {
-    // prepare database
-    // const user = await dataSource.manager.create(UserEntity, {});
-
+  it('register user when its not regitered yet', async () => {
     // instance mocks
     const mockAuthSignUp = auth.signUp as jest.Mock;
     const mockAuthConfirmUser = auth.confirmUser as jest.Mock;
     const mockAuthAddRoleToUser = auth.addRoleToUser as jest.Mock;
-    const mockAuthAddSignIn = auth.signIn as jest.Mock;
+    const mockAuthSignIn = auth.signIn as jest.Mock;
 
     // resolve mooks
     mockAuthSignUp.mockResolvedValueOnce(undefined);
     mockAuthConfirmUser.mockResolvedValueOnce(undefined);
     mockAuthAddRoleToUser.mockResolvedValueOnce(undefined);
-    mockAuthAddSignIn.mockResolvedValueOnce({
+    mockAuthSignIn.mockResolvedValue({
       token: 'mocked-token',
       expiresIn: '3600s',
     });
@@ -117,13 +93,20 @@ describe('POST /auth', () => {
       'test@test.com',
       UserRoleEnum.USER,
     );
-    expect(mockAuthAddSignIn).toHaveBeenCalledWith(
+    expect(mockAuthSignIn).toHaveBeenCalledWith(
       'test@test.com',
       '123abcABC!@#',
     );
 
     // expect response
     expect(response.statusCode).toEqual(201);
+    expect(response.body).toEqual(
+      expect.objectContaining({
+        type: 'Bearer',
+        token: 'mocked-token',
+        expiresIn: '3600s',
+      }),
+    );
 
     // expect database
     expect(
