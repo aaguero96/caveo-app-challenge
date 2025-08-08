@@ -3,29 +3,58 @@ import { IJwtMiddleware } from './jwt-middleware.interface';
 import {
   AuthorizationHeaderNotFoundException,
   BearerTokenNotFoundException,
+  UserUnauthorizedException,
 } from '../../exceptions';
+import { IAuth } from '../../auth/auth.interface';
+import { IUserRepository } from '../../repositories/user/user-repository.interface';
+import { handleExceptionResponse } from '../../utils';
 
-export const createJwtMiddleware = (): IJwtMiddleware => {
-  return new JwtMiddleware();
+export const createJwtMiddleware = (
+  auth: IAuth,
+  userRepository: IUserRepository,
+): IJwtMiddleware => {
+  return new JwtMiddleware(auth, userRepository);
 };
 
 class JwtMiddleware implements IJwtMiddleware {
-  constructor() {}
+  constructor(
+    private readonly _auth: IAuth,
+    private readonly _userRepository: IUserRepository,
+  ) {}
 
   validateBearerToken = async (
     ctx: ParameterizedContext,
     next: Next,
   ): Promise<void> => {
-    const authHeader = ctx.headers['authorization'];
-    if (!authHeader) {
-      throw new AuthorizationHeaderNotFoundException();
-    }
+    try {
+      const authHeader = ctx.headers['authorization'];
+      if (!authHeader) {
+        throw new AuthorizationHeaderNotFoundException();
+      }
 
-    const [type, token] = authHeader.split(' ');
-    if (type !== 'Bearer' || !token) {
-      throw new BearerTokenNotFoundException();
-    }
+      const [type, token] = authHeader.split(' ');
+      if (type !== 'Bearer' || !token) {
+        throw new BearerTokenNotFoundException();
+      }
 
-    await next();
+      const tokenData = await this._auth.decodeToken(token);
+
+      const user = await this._userRepository.findOne({
+        email: tokenData.email,
+      });
+      if (!user) {
+        throw new UserUnauthorizedException();
+      }
+
+      ctx.state.user = {
+        id: user.id,
+        role: user.role,
+      };
+
+      await next();
+    } catch (err) {
+      handleExceptionResponse(err, ctx);
+      return;
+    }
   };
 }

@@ -29,7 +29,7 @@ const main = async () => {
     userRepository,
   );
   const editAccountService = createEditAccountService();
-  const getMeService = createGetMeService();
+  const getMeService = createGetMeService(userRepository);
   const getUsersService = createGetUsersService();
   const service = createService(
     signInOrRegisterService,
@@ -38,7 +38,7 @@ const main = async () => {
     getUsersService,
   );
 
-  const jwtMiddeware = createJwtMiddleware();
+  const jwtMiddeware = createJwtMiddleware(auth, userRepository);
   const roleMiddeware = createRoleMiddleware();
   const validateRequestMiddeware = createValidatieRequestMiddleware();
 

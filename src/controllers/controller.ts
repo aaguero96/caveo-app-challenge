@@ -12,6 +12,7 @@ import {
 } from '../dtos';
 import { UserState } from '../states/user.state';
 import { handleExceptionResponse } from '../utils';
+import { UserUnauthorizedException } from '../exceptions';
 
 export const createController = (service: IService): IController => {
   return new Controller(service);
@@ -50,10 +51,23 @@ class Controller implements IController {
   };
 
   getMe = async (
-    ctx: ParameterizedContext<UserState, DefaultContext, GetMeResponseDto>,
+    ctx: ParameterizedContext<
+      DefaultState & { user: UserState },
+      DefaultContext,
+      GetMeResponseDto
+    >,
   ): Promise<void> => {
-    ctx.status = 200;
-    ctx.body = await this._service.getMe(ctx.state.id);
+    try {
+      if (!ctx.state.user) {
+        throw new UserUnauthorizedException();
+      }
+
+      ctx.status = 200;
+      ctx.body = await this._service.getMe(ctx.state.user.id);
+    } catch (err) {
+      handleExceptionResponse(err, ctx);
+      return;
+    }
   };
 
   getUsers = async (

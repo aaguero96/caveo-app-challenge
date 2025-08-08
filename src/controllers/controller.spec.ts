@@ -105,7 +105,9 @@ describe('Controller', () => {
     it('success case', async () => {
       const ctx = {
         state: {
-          id: '',
+          user: {
+            id: '',
+          },
         },
       } as any;
 
@@ -116,6 +118,45 @@ describe('Controller', () => {
       expect(mockService.getMe.mock.calls).toHaveLength(1);
       expect(ctx.body).toStrictEqual({});
       expect(ctx.status).toEqual(200);
+    });
+
+    it('error case - user not in state', async () => {
+      const ctx = {
+        state: {},
+      } as any;
+
+      await controller.getMe(ctx);
+
+      expect(ctx.body).toStrictEqual({
+        status: 401,
+        errorCode: 'user.unauthorized',
+        message: 'user is unauthorized',
+        body: undefined,
+      });
+      expect(ctx.status).toEqual(401);
+    });
+
+    it('error case - generic error', async () => {
+      const ctx = {
+        state: {
+          user: {
+            id: '',
+          },
+        },
+      } as any;
+
+      mockService.getMe.mockRejectedValueOnce(new Error('mock-error'));
+
+      await controller.getMe(ctx);
+
+      // expect(mockService.getMe.mock.calls).toHaveLength(1);
+      expect(ctx.body).toStrictEqual({
+        status: 500,
+        errorCode: 'internal_server_error',
+        message: 'mock-error',
+        body: new Error('mock-error'),
+      });
+      expect(ctx.status).toEqual(500);
     });
   });
 
