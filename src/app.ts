@@ -14,6 +14,13 @@ import { createAuth } from './auth/auth';
 import { createUserRepository } from './repositories/user/user.repository';
 import { createValidatieRequestMiddleware } from './middlewares/validate-request/validate-request.middleware';
 import { createValidatieQueryMiddleware } from './middlewares/validate-query/validate-query.middleware';
+import { SwaggerRouter } from 'koa-swagger-decorator';
+import {
+  AuthSwagger,
+  EditAccountSwagger,
+  GetMeSwagger,
+  GetUsersSwagger,
+} from './swagger';
 
 const main = async () => {
   const envConfig = createEnvConfig();
@@ -60,9 +67,33 @@ const main = async () => {
 
   const app = new Koa();
 
+  const swaggerRouter = new SwaggerRouter();
+  swaggerRouter.swagger({
+    title: 'CAVEO API CHALLENGE',
+    description: 'API documentation',
+    version: '1.0.0',
+    swaggerHtmlEndpoint: '/docs',
+    swaggerJsonEndpoint: '/docs-json',
+    swaggerOptions: {
+      securityDefinitions: {
+        access_token: {
+          type: 'apiKey',
+          in: 'header',
+          name: 'Authorization',
+        },
+      },
+    },
+  });
+  swaggerRouter.map(AuthSwagger, {});
+  swaggerRouter.map(GetMeSwagger, {});
+  swaggerRouter.map(EditAccountSwagger, {});
+  swaggerRouter.map(GetUsersSwagger, {});
+
   app.use(bodyParser());
 
   app.use(router.routes());
+
+  app.use(swaggerRouter.routes());
 
   app.listen(3000);
 };

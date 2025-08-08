@@ -5,6 +5,7 @@ export const stringToEnvironmentEnum = (value: string): EnvironmentEnum => {
   const mapper: { [value: string]: EnvironmentEnum } = {
     test: EnvironmentEnum.TEST,
     development: EnvironmentEnum.DEVELOPMENT,
+    production: EnvironmentEnum.PRODUCTION,
   };
 
   if (mapper[value]) {

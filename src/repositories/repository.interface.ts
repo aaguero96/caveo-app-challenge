@@ -4,7 +4,6 @@ import {
   FindOptionsOrder,
   FindOptionsWhere,
 } from 'typeorm';
-import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity.js';
 
 export interface IRepository<T> {
   create(
@@ -35,7 +34,7 @@ export interface IRepository<T> {
   ): Promise<T[]>;
   update(
     id: string,
-    data: QueryDeepPartialEntity<T>,
+    data: T,
     options?:
       | {
           manager?: EntityManager | undefined;
